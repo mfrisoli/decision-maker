@@ -30,6 +30,13 @@ CREATE TABLE voting (
     FOREIGN KEY (room_id) REFERENCES 'rooms' ('room_id')
     );
 
+CREATE TABLE roomjoins (
+    'roomjoin_id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    'room_id' INTEGER NOT NULL,
+    'user_id' INTEGER NOT NULL,
+    'status' TEXT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES 'users' ('id')
+    );
 
 /*
 
