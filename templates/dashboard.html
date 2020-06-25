@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Dashboard
+{% endblock %}
+
+{% block main %}
+    
+ <h1>ROOM: {{ room[0]['room_name'] }}</h1>
+
+    <table class="table">
+        <thread>
+            <tr>
+                <th scope="col">Option</th>
+                <th scope="col">Vote</th>
+            </tr>
+        </thread>
+    <form action="/dashboard" method="get">
+        {% for row in options %}
+            <tbody>
+                <tr>
+                    <th scope="row">{{ row['option_name'] }}</th>
+                    <td><input autocomplete="on" autofocus class="form-control" type="number" min="1" required step="1" name={{ row["option_id"] }}></td>
+                </tr>
+            </tbody>
+        {% endfor %}
+    </table>
+        <button class="btn btn-primary" type="submit">Submit Votes!</button>
+    </form>
+{% endblock %}

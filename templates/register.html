@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Register
+{% endblock %}
+
+{% block main %}
+    <h2>New User Registration</h2>
+    <br>
+    <form action="/register" method="post">
+        <div class="form-group">
+            <input autocomplete="off" autofocus class="form-control" id="username" name="username" placeholder="Username" type="text">
+        </div>
+        <div class="form-group">
+            <input class="form-control" id="password" name="password" placeholder="Password" type="password">
+        </div>
+        <div class="form-group">
+            <input class="form-control" id="password_con" name="password_con" placeholder="Confirm Password" type="password">
+        </div>
+        <button class="btn btn-primary" id="submit" type="submit" disabled>Register</button>
+
+    </form>
+    <p id='password_message'></p>
+     <script>
+         function validate(){
+            if ((document.querySelector('#password').value === '') || (document.querySelector('#password_con').value === '') || (document.querySelector('#username').value === '')){
+                document.querySelector('#submit').disabled = true;
+            }
+            else{
+                if(document.querySelector('#password').value === document.querySelector('#password_con').value){
+                    document.querySelector('#submit').disabled = false;
+                    document.getElementById('password_message').innerHTML = "Password match";
+                }
+                else{
+                    document.getElementById('password_message').innerHTML = "Password does not match";
+                }
+            }
+        }
+
+
+        document.querySelector('#password').onkeyup = validate
+        document.querySelector('#password_con').onkeyup = validate
+        document.querySelector('#username').onkeyup = validate
+
+    </script>
+{% endblock %}

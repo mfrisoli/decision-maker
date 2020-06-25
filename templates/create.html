@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Buy
+{% endblock %}
+
+{% block main %}
+    <form action="/create" method="post">
+        <div class="form-group">
+            <p>Are you ready to find an Answer to your group!</p>
+
+        </div>
+        <div class="form-group">
+            <input autocomplete="on" autofocus class="form-control" name="room_name" placeholder="Room Name" type="text" maxlength="10" required>
+        </div>
+        <button class="btn btn-primary" type="submit">Create Room</button>
+    </form>
+
+{% endblock %}
+
+

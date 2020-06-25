@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Search Room
+{% endblock %}
+
+{% block main %}
+    <form action="/" method="post">
+        <div class="form-group">
+            <input autocomplete="on" autofocus class="form-control" name="room_id" placeholder="Room ID" type="text" maxlenght="10" required>
+        </div>
+        <button class="btn btn-primary" type="submit">Search Room</button>
+    </form>
+ 
+    {% if search %}
+        {{ room }}
+
+        <table class="table">
+            <thread>
+                <tr>
+                    <th scope="col">Room ID</th>
+                    <th scope="col">Room Name</th>
+                    <th scope="col">Join to Vote</th>
+                </tr>
+            </thread>
+            <tbody>
+                <tr>
+                    <th scope="row">{{ room[0]['room_id'] }}</th>
+                    <td>{{ room[0]['room_name'] }}</td>
+                    <td>
+                       <form action="/godashboard" method="get">
+                        <button class="btn btn-primary" name=room_id_join value={{ room[0]['room_id'] }} type="submit">Join!</button>
+                       </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

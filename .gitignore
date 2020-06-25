@@ -1,0 +1,9 @@
+templates/quoted.html
+templates/sell.html
+templates/history.html
+templates/add_cash.html
+templates/test.htm
+app copy.py
+-- SQLite.sql
+__pycache__
+.vscode
