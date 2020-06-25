@@ -44,10 +44,11 @@ def create_room(database, room_name, user_id):
             
             room_id = database.execute("SELECT MAX (room_id) AS room_id FROM rooms")
 
-            database.execute("INSERT INTO roomjoins (room_id, user_id)\
-                VALUES (:room_id, :user_id)",
+            database.execute("INSERT INTO roomjoins (room_id, user_id, status)\
+                VALUES (:room_id, :user_id, :status)",
                 room_id=room_id[0]['room_id'],
-                user_id=user_id)
+                user_id=user_id,
+                status='join')
 
     
     

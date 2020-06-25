@@ -7,3 +7,4 @@ app copy.py
 -- SQLite.sql
 __pycache__
 .vscode
+deletetables.sql

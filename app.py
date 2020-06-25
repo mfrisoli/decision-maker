@@ -50,7 +50,7 @@ def index():
 
 
         if len(room) != 1:
-            return apology("room not found")
+            return render_template("index.html", search=False, message="Room not Found")
 
         else:
             return render_template("index.html", room=room, search=True)
@@ -134,7 +134,7 @@ def show_rooms():
         rooms = db.execute("SELECT * FROM rooms WHERE user_id=:user_id", user_id=session['user_id'])
 
         # Rooms user is part of and can vote
-        rooms_joins = db.execute("SELECT * FROM rooms WHERE room_id IN (SELECT room_id FROM roomjoins WHERE user_id=:user_id)", user_id=session['user_id'])
+        rooms_joins = db.execute("SELECT * FROM rooms WHERE room_id IN (SELECT room_id FROM roomjoins WHERE user_id=:user_id AND status='join')", user_id=session['user_id'])
 
         return render_template("rooms.html", rooms=rooms, rooms_joins=rooms_joins)
 
@@ -180,7 +180,7 @@ def show_rooms():
             room_id = request.form.get("room_id")
             user_id = session['user_id']
 
-            db.execute("DELETE FROM roomjoins WHERE room_id=:room_id AND user_id=:user_id", room_id=room_id, user_id=user_id)
+            db.execute("UPDATE roomjoins SET status='leave' WHERE room_id=:room_id AND user_id=:user_id", room_id=room_id, user_id=user_id)
 
             return redirect("/rooms")
 
@@ -189,6 +189,7 @@ def show_rooms():
 @login_required
 def add_list():
     if request.method == "GET":
+        # TODO: check if room is already voting or closed, else it can be modified
         room_id = session['edit_room']
         room = db.execute("SELECT * FROM options WHERE room_id=:room_id", room_id=room_id)
         room_name = db.execute("SELECT room_name FROM rooms WHERE room_id=:room_id", room_id=room_id)
@@ -236,6 +237,11 @@ def register():
 def godashboard():
     room_id = request.args['room_id_join']
     session["edit_room"] = room_id
+
+    # TODO: Check if user is already in this room:
+    # db.execute("SELECT * FROM roomjoins WHERE room_id=:room_id AND user_id=:user_id", room_id=room_id, user_id=session['user_id'])
+
+
     return redirect("/dashboard")
 
 @app.route("/dashboard", methods=["GET", "POST"])
