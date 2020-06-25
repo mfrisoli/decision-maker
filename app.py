@@ -165,7 +165,8 @@ def show_rooms():
             # Delete roomsjoins table
             db.execute("DELETE FROM roomjoins WHERE room_id=:room_id", room_id=room_id)
 
-            #TODO delete votes
+            # delete votes
+            db.execute("DELETE FROM voting WHERE room_id=:room_id", room_id=room_id)
 
             return redirect("/rooms")
 
