@@ -6,6 +6,7 @@
 
 {% block main %}
 <h2>Room: {{ room_name }}</h2>
+<p>Room Status: Editing</p>
     <table class="table">
         <thread>
             <tr>
@@ -31,37 +32,22 @@
             <tr>
                 <th scope="row">Add</th>
                 <td>
-                <form action="/createlist" method="post">
-                        <input autocomplete="on" autofocus class="form-control" name="option" placeholder="New Option" type="text" maxlength="25">
+                    <form action="/createlist" method="post">
+                        <input autocomplete="on" autofocus class="form-control" name="option" placeholder="New Option" type="text" maxlength="25" required>
                 </td>
                 <td>
                         <button class="btn btn-primary" name="add" value="add" type="submit">Add</button>
-                </form>
+                    </form>
                 </td>
             </tr>
         </tbody>
     </table>
-    <script>
-         function validate(){
-            if ((document.querySelector('#password').value === '') || (document.querySelector('#password_con').value === '') || (document.querySelector('#username').value === '')){
-                document.querySelector('#submit').disabled = true;
-            }
-            else{
-                if(document.querySelector('#password').value === document.querySelector('#password_con').value){
-                    document.querySelector('#submit').disabled = false;
-                    document.getElementById('password_message').innerHTML = "Password match";
-                }
-                else{
-                    document.getElementById('password_message').innerHTML = "Password does not match";
-                }
-            }
-        }
-
-
-        document.querySelector('#password').onkeyup = validate
-        document.querySelector('#password_con').onkeyup = validate
-        document.querySelector('#username').onkeyup = validate
-    </script>
+    <div>
+        <h4>Ready to Vote? Click Here -></h4>
+        <form action="/godashboard" method="GET">
+            <button class="btn btn-primary" name="room_id_join" value={{ room_id }} type="submit">Start Voting!</button>
+        </form>
+    </div>
 
 {% endblock %}
 

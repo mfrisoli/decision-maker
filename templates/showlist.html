@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Add Options
+{% endblock %}
+
+{% block main %}
+<h2>Room: {{ room_name }}</h2>
+<p>Room Status: Voting/Closed, to modify or reset votes, reset Room</p>
+    <table class="table">
+        <thread>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Option Name</th>
+                <th scope="col"></th>
+            </tr>
+        </thread>
+        <tbody>
+            {% for row in room %}
+                <tr>
+                    <th scope="row">Number</th>
+                    <td>{{ row['option_name'] }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
+
+

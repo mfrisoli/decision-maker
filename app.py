@@ -192,10 +192,15 @@ def add_list():
     if request.method == "GET":
         # TODO: check if room is already voting or closed, else it can be modified
         room_id = session['edit_room']
-        room = db.execute("SELECT * FROM options WHERE room_id=:room_id", room_id=room_id)
-        room_name = db.execute("SELECT room_name FROM rooms WHERE room_id=:room_id", room_id=room_id)
+        room_options = db.execute("SELECT * FROM options WHERE room_id=:room_id", room_id=room_id)
+        room = db.execute("SELECT * FROM rooms WHERE room_id=:room_id", room_id=room_id)
 
-        return render_template("createlist.html", room=room, room_name=room_name[0]['room_name'])
+        if room[0]['status'] == 'edit':
+
+            return render_template("createlist.html", room=room_options, room_name=room[0]['room_name'], room_id=room_id)
+        
+        else:
+            return render_template("showlist.html", room=room_options, room_name=room[0]['room_name'],  room_id=room_id)
 
     else:
         if request.form.get("add") == "add":
