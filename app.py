@@ -54,10 +54,7 @@ def index():
 
         else:
             return render_template("index.html", room=room, search=True)
-       # TODO: Join room
-       # TODO: see rooms your are in show VOTING ACTIVE/POLL CLOSED
-       # TODO: Vote in room
-       # TODO: See results
+
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -139,22 +136,27 @@ def show_rooms():
         return render_template("rooms.html", rooms=rooms, rooms_joins=rooms_joins)
 
     else:
+        room_id = request.form.get("room_id")
+
         if(request.form.get("option") == "edit"):
+            
             # Go to create list:
-            room_id = request.form.get("room_id")
             session['edit_room'] = room_id
 
             return redirect("/createlist")
 
         elif (request.form.get("option") == "reset"):
-            # TODO: Reset all votes on the list?
+            # Reset all votes on the list
+            db.execute("DELETE FROM voting WHERE room_id=:room_id", room_id=room_id)
 
-            return apology("TODO")
+            # Change Status of room to open
+            db.execute("UPDATE rooms SET status='open' WHERE room_id=:room_id", room_id=room_id)
+
+            return redirect("/rooms")
             
         elif (request.form.get("option") == "delete"):
 
             # Delete Room, Votes and Options
-            room_id = request.form.get("room_id")
             
             # Delete Options:
             db.execute("DELETE FROM options WHERE room_id=:room_id", room_id=room_id)           
@@ -172,7 +174,7 @@ def show_rooms():
 
         elif request.form.get("option_joins") == "dashboard":
 
-            session['edit_room'] = request.form.get("room_id")
+            session['edit_room'] = room_id
 
             return redirect("/dashboard")
 
@@ -186,11 +188,31 @@ def show_rooms():
             return redirect("/rooms")
 
 
+@app.route("/modifylist", methods=["GET", "POST"])
+@login_required
+def edit_list():
+
+    if request.method =="GET":
+
+        room_id = session['edit_room']
+        room_options = db.execute("SELECT * FROM options WHERE room_id=:room_id", room_id=room_id)
+        room = db.execute("SELECT * FROM rooms WHERE room_id=:room_id", room_id=room_id)
+
+        return render_template("showlist.html", room=room_options, room_name=room[0]['room_name'],  room_id=room_id)
+    else:
+
+        room_id = request.form.get("room_id")
+        db.execute("UPDATE rooms SET status='edit' WHERE room_id=:room_id", room_id=room_id)
+        session['edit_room'] = room_id
+
+        return redirect("/createlist")
+
+
 @app.route("/createlist", methods=["GET", "POST"])
 @login_required
 def add_list():
     if request.method == "GET":
-        # TODO: check if room is already voting or closed, else it can be modified
+        # check if room is already voting or closed, else it can be modified
         room_id = session['edit_room']
         room_options = db.execute("SELECT * FROM options WHERE room_id=:room_id", room_id=room_id)
         room = db.execute("SELECT * FROM rooms WHERE room_id=:room_id", room_id=room_id)
@@ -200,7 +222,9 @@ def add_list():
             return render_template("createlist.html", room=room_options, room_name=room[0]['room_name'], room_id=room_id)
         
         else:
-            return render_template("showlist.html", room=room_options, room_name=room[0]['room_name'],  room_id=room_id)
+            
+            # room_id = session['edit_room']
+            return redirect("/modifylist")
 
     else:
         if request.form.get("add") == "add":
@@ -244,9 +268,21 @@ def godashboard():
     room_id = request.args['room_id_join']
     session["edit_room"] = room_id
 
-    # TODO: Check if user is already in this room:
-    # db.execute("SELECT * FROM roomjoins WHERE room_id=:room_id AND user_id=:user_id", room_id=room_id, user_id=session['user_id'])
+    # Check if user is already in this room or has ever been in the room:
+    in_room = db.execute("SELECT * FROM roomjoins WHERE room_id=:room_id AND user_id=:user_id", room_id=room_id, user_id=session['user_id'])
 
+    if in_room != 1:
+        # Add user to room
+        db.execute("INSERT INTO roomjoins (room_id, user_id)\
+            VALUES (:room_id, :user_id)",
+            room_id=room_id,
+            user_id=session['user_id']
+            )
+    else:
+        db.execute("UPDATE roomjoins SET status='join' WHERE room_id=:room_id AND user_id=:user_id",
+                    room_id=room_id,
+                    user_id=session['user_id']
+                    )
 
     return redirect("/dashboard")
 
@@ -261,12 +297,28 @@ def dashboard():
         room_id = session['edit_room']
         room = db.execute("SELECT * FROM rooms WHERE room_id=:room_id", room_id=room_id)
         options = db.execute("SELECT * FROM options WHERE room_id=:room_id", room_id=room_id)
+        room_user_data = db.execute("SELECT * FROM roomjoins WHERE room_id=:room_id AND user_id=:user_id", room_id=room_id, user_id=session['user_id'])
 
-        # Check if user voted
+        # Check if user is in the room:
+        if room_user_data[0]['status'] == 'join':
+            # Check if room is open or closed
+            if room[0]['status'] == 'open' and room_user_data[0]['voted'] == 'no':
+                # Check if user Voted
+                pass
+                    # TODO ask user to vote
+            elif room[0]['status'] in ['open', 'close'] and room_user_data[0]['voted'] == 'yes':
 
-        # check if poll is open or close
+                # Check if room is open vor voting
+                if room[0]['status'] == 'open':
+            else:
+                # TODO: render dashboard for room is closed
+        else:
 
-        return render_template('dashboard.html', room=room, options=options)
+            return apology("you are not in this room")
+        
+        # check if poll if user has voted
+
+            return render_template('dashboard.html', room=room, options=options)
     else:
         return apology("not working")
 
