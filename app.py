@@ -283,6 +283,11 @@ def godashboard():
                     room_id=room_id,
                     user_id=session['user_id']
                     )
+    
+    db.execute("UPDATE rooms SET status='open' WHERE room_id=:room_id AND user_id=:user_id",
+                    room_id=room_id,
+                    user_id=session['user_id']
+                    )
 
     return redirect("/dashboard")
 
@@ -333,37 +338,43 @@ def dashboard():
         elif room_status == "close":
             if not user_voted:
                 # TODO show results and tell user it did not vote:
-                return render_template('dashboard.html', room=room, options=options)
+                return apology("show all results")
 
             
             # Show all results
             else:
                 # TODO: Show dashboar wiht user result
-                pass
+                return apology("show all results including user")
 
         # Else room is being edited
         else:
             return apology("room is being edited and not available for voting!")
-        
 
-        return render_template('dashboard.html', room=room, options=options)
+    # else request.method="POST"      
     else:
+
+        # Room Details
+        room_id = session['edit_room']
+        room = db.execute("SELECT * FROM rooms WHERE room_id=:room_id", room_id=room_id)
+        options = db.execute("SELECT * FROM options WHERE room_id=:room_id", room_id=room_id)
+        room_user_data = db.execute("SELECT * FROM roomjoins WHERE room_id=:room_id AND user_id=:user_id", room_id=room_id, user_id=session['user_id'])
+
         # TODO Post Results and store in data base
         for row in options:
 
-            vote = request.form.get(row['option_id'])
+            vote = request.form.get(str(row['option_id']))
 
             db.execute("INSERT INTO voting (option_id, vote, user_id, room_id)\
                 VALUES (:option_id, :vote, :user_id, :room_id)",
                 option_id=row['option_id'],
                 vote=vote,
                 user_id=session['user_id'],
-                room_id=session['room_id']
+                room_id=room_id
                 )
 
         # Change user to voted="yes"
         db.execute("UPDATE roomjoins SET voted='yes' WHERE room_id=:room_id AND user_id=:user_id",
-                    room_id=session['room_id'],
+                    room_id=room_id,
                     user_id=session['user_id']
                     )
                     

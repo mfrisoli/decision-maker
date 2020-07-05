@@ -8,3 +8,4 @@ app copy.py
 __pycache__
 .vscode
 deletetables.sql
+templates/test.html
