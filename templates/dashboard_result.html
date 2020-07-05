@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Dashboard - Results
+{% endblock %}
+
+{% block main %}
+    
+ <h1>ROOM: {{ room[0]['room_name'] }}</h1>
+
+    <table class="table">
+        <thread>
+            <tr>
+                <th scope="col">Option</th>
+                <th scope="col">Vote</th>
+            </tr>
+        </thread>
+        {% for row in user_votes %}
+            <tbody>
+                <tr>
+                    <th scope="row">{{ row['option_name'] }}</th>
+                    <td>{{ row['vote'] }}</td>
+                </tr>
+            </tbody>
+        {% endfor %}
+    </table>
+{% endblock %}
