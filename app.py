@@ -299,30 +299,50 @@ def dashboard():
         options = db.execute("SELECT * FROM options WHERE room_id=:room_id", room_id=room_id)
         room_user_data = db.execute("SELECT * FROM roomjoins WHERE room_id=:room_id AND user_id=:user_id", room_id=room_id, user_id=session['user_id'])
 
+        # Room is open:
+        room_status = room[0]['status']
+        user_voted = room_user_data[0]['voted'] == 'yes'
+        in_room = room_user_data[0]['status'] == 'join'
+
         # Check if user is in the room:
-        if room_user_data[0]['status'] == 'join':
-            # Check if room is open or closed
-            if room[0]['status'] == 'open' and room_user_data[0]['voted'] == 'no':
-                # Check if user Voted
-                pass
-                    # TODO ask user to vote
-            elif room[0]['status'] in ['open', 'close'] and room_user_data[0]['voted'] == 'yes':
-
-                # Check if room is open vor voting
-                if room[0]['status'] == 'open':
-            else:
-                # TODO: render dashboard for room is closed
-        else:
-
+        if not in_room:
+            # User not in the room display apology
             return apology("you are not in this room")
+
+        # User is in the room, continue
+
+        # if room is open 
+        if room_status == "open":
+            if not user_voted:
+                # TODO ask user to vote:
+                return render_template('dashboard.html', room=room, options=options)
+            
+            # user voted -> Show user result only
+            else:
+                # TODO: Show dashboar wiht user result
+                pass
+
+        # else if Room is open or close and user voted -> Show Dashboard with ALL results
+        elif room_status == "close":
+            if not user_voted:
+                # TODO show results and tell user it did not vote:
+                return render_template('dashboard.html', room=room, options=options)
+            
+            # Show all results
+            else:
+                # TODO: Show dashboar wiht user result
+                pass
+
+        # Else room is being edited
+        else:
+            pass
+            # TODO: check if user voted
         
-        # check if poll if user has voted
 
-            return render_template('dashboard.html', room=room, options=options)
+        return render_template('dashboard.html', room=room, options=options)
     else:
-        return apology("not working")
-
-
+        # TODO Post Results and store in data base
+        return redirect("/dashboard")
 
 
 def errorhandler(e):
