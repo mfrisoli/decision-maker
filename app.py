@@ -273,10 +273,11 @@ def godashboard():
 
     if len(in_room) != 1:
         # Add user to room
-        db.execute("INSERT INTO roomjoins (room_id, user_id)\
-            VALUES (:room_id, :user_id)",
+        db.execute("INSERT INTO roomjoins (room_id, user_id, status)\
+            VALUES (:room_id, :user_id, :status)",
             room_id=room_id,
-            user_id=session['user_id']
+            user_id=session['user_id'],
+            status="join"
             )
     else:
         db.execute("UPDATE roomjoins SET status='join' WHERE room_id=:room_id AND user_id=:user_id",
@@ -319,7 +320,7 @@ def dashboard():
         # if room is open 
         if room_status == "open":
             if not user_voted:
-                # TODO ask user to vote:
+                # Ask user to vote:
                 session['edit_room'] = room_id
                 return render_template('dashboard_vote.html', room=room, options=options)
             
@@ -329,9 +330,10 @@ def dashboard():
                 user_votes = db.execute("SELECT options.option_id, options.option_name, voting.vote \
                             FROM voting\
                             JOIN options ON voting.option_id=options.option_id\
-                            WHERE voting.user_id=:user_id AND voting.room_id-:room_id",
+                            WHERE voting.user_id=:user_id AND voting.room_id=:room_id",
                             user_id=session["user_id"],
                             room_id=room_id)
+
                 return render_template("dashboard_result.html", user_votes=user_votes, room=room)
 
         # else if Room is open or close and user voted -> Show Dashboard with ALL results
