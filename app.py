@@ -326,7 +326,7 @@ def dashboard():
             
             # user voted -> Show user result only
             else:
-                # TODO: Show dashboar wiht user result
+                # Show dashboard wiht user result
                 user_votes = db.execute("SELECT options.option_id, options.option_name, voting.vote \
                             FROM voting\
                             JOIN options ON voting.option_id=options.option_id\
@@ -346,6 +346,18 @@ def dashboard():
             # Show all results
             else:
                 # TODO: Show dashboar wiht user result
+                """
+                SELECT cust_city, 
+                SUM (opening_amt + receive_amt) 
+                FROM customer 
+                GROUP BY cust_city;
+                """
+                db.execute("SELECT options.option_name, SUM (voting.vote) AS all_votes \
+                    FROM voting \
+                    JOIN options ON voting.option_id=options.option_id \
+                    GROUP BY (options.option_name) \
+                    ORDER BY all_votes DESC")
+                    
                 return apology("show all results including user")
 
         # Else room is being edited

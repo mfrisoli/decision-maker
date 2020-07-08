@@ -50,6 +50,7 @@
             
                 <th scope="col">Room ID</th>
                 <th scope="col">Room Name</th>
+                <th scope="col">Status</th>
                 <th scope="col">Edit Options</th>
             </tr>
         </thread>
@@ -58,6 +59,7 @@
             <tr>
                 <th scope="row">{{ row['room_id'] }}</th>
                 <td>{{ row['room_name'] }}</td>
+                <td>{{ row['status'] }}</td>
                 <td>
                    <form action="/rooms" method="post">
                     <select class="form-control" id="dropdown-menu" name="option_joins">
