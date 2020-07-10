@@ -8,21 +8,49 @@
     
 <h1>ROOM: {{ room[0]['room_name'] }}</h1>
 <h6>STATUS: {{ room[0]['status'] }}</h6>
-<h3>These are your votes!</h3>
-    <table class="table">
-        <thread>
-            <tr>
-                <th scope="col">Option</th>
-                <th scope="col">Vote</th>
-            </tr>
-        </thread>
-        {% for row in user_votes %}
-            <tbody>
+<h6>{{ message }}</h6>
+{% if user_voted %}
+    <div>
+    <h3>This is your Vote!</h3>
+        <table class="table">
+            <thread>
                 <tr>
-                    <th scope="row">{{ row['option_name'] }}</th>
-                    <td>{{ row['vote'] }} teeest</td>
+                    <th scope="col">Option</th>
+                    <th scope="col">Vote</th>
                 </tr>
-            </tbody>
-        {% endfor %}
-    </table>
+            </thread>
+            {% for row in user_votes %}
+                <tbody>
+                    <tr>
+                        <th scope="row">{{ row['option_name'] }}</th>
+                        <td>{{ row['vote'] }}</td>
+                    </tr>
+                </tbody>
+            {% endfor %}
+        </table>
+    </div>
+{% endif %}
+
+{% if room_close %}
+    <div>
+    <h3>These are the Room Results!</h3>
+        <table class="table">
+            <thread>
+                <tr>
+                    <th scope="col">Option</th>
+                    <th scope="col">Vote</th>
+                </tr>
+            </thread>
+            {% for row in room_votes %}
+                <tbody>
+                    <tr>
+                        <th scope="row">{{ row['option_name'] }}</th>
+                        <td>{{ row['vote'] }}</td>
+                    </tr>
+                </tbody>
+            {% endfor %}
+        </table>
+    </div>
+{% endif %}
+
 {% endblock %}

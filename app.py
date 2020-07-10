@@ -326,6 +326,8 @@ def dashboard():
             
             # user voted -> Show user result only
             else:
+                message = "These are your Votes!, to see the Room Results \
+                           you have to wait the voting finishes!"
                 # Show dashboard wiht user result
                 user_votes = db.execute("SELECT options.option_id, options.option_name, voting.vote \
                             FROM voting\
@@ -334,31 +336,64 @@ def dashboard():
                             user_id=session["user_id"],
                             room_id=room_id)
 
-                return render_template("dashboard_result.html", user_votes=user_votes, room=room)
+                return render_template("dashboard_result.html",
+                                        user_votes=user_votes,
+                                        room=room,
+                                        room_close=False,
+                                        user_voted=user_voted,
+                                        message=message
+                                        )
 
         # else if Room is open or close and user voted -> Show Dashboard with ALL results
         elif room_status == "close":
             if not user_voted:
                 # TODO show results and tell user it did not vote:
-                return apology("show all results")
+                message = "You did not Vote! but these are the Results!"
+                room_votes = db.execute("SELECT options.option_name, SUM (voting.vote) AS all_votes \
+                    FROM voting \
+                    JOIN options ON voting.option_id=options.option_id \
+                    WHERE options.room_id=:room_id\
+                    GROUP BY (options.option_name) \
+                    ORDER BY all_votes DESC")
+
+                return render_template("dashboard_result.html",
+                                        room_votes=room_votes,
+                                        room=room,
+                                        room_close=True,
+                                        user_voted=user_voted,
+                                        message=message
+                                        )
 
             
             # Show all results
             else:
                 # TODO: Show dashboar wiht user result
-                """
-                SELECT cust_city, 
-                SUM (opening_amt + receive_amt) 
-                FROM customer 
-                GROUP BY cust_city;
-                """
-                db.execute("SELECT options.option_name, SUM (voting.vote) AS all_votes \
+                message = "Here are your votes and the Results!"
+
+                # User Votes:
+                user_votes = db.execute("SELECT options.option_id, options.option_name, voting.vote \
+                    FROM voting\
+                    JOIN options ON voting.option_id=options.option_id\
+                    WHERE voting.user_id=:user_id AND voting.room_id=:room_id",
+                    user_id=session["user_id"],
+                    room_id=room_id)
+
+                # Room Results
+                room_votes = db.execute("SELECT options.option_name, SUM (voting.vote) AS all_votes \
                     FROM voting \
                     JOIN options ON voting.option_id=options.option_id \
+                    WHERE options.room_id=:room_id\
                     GROUP BY (options.option_name) \
                     ORDER BY all_votes DESC")
                     
-                return apology("show all results including user")
+                return render_template("dashboard_result.html",
+                                        room_votes=room_votes,
+                                        user_votes=user_votes,
+                                        room=room,
+                                        room_close=True,
+                                        user_voted=user_voted,
+                                        message=message
+                                        )
 
         # Else room is being edited
         else:
