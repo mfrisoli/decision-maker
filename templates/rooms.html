@@ -29,8 +29,9 @@
                    <form action="/rooms" method="post">
                     <select class="form-control" id="dropdown-menu" name="option">
                             <option value="edit">Edit</option>
-                            <option value=reset>Reset</option>
-                            <option value=delete>Delete</option>
+                            <option value="reset">Reset</option>
+                            <option value="close">close</option>
+                            <option value="delete">Delete</option>
                     </select>
                     <button class="btn btn-primary" name=room_id value={{ row['room_id'] }} type="submit">Go!</button>
                    </form>

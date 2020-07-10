@@ -152,8 +152,19 @@ def show_rooms():
             # Change Status of room to open
             db.execute("UPDATE rooms SET status='open' WHERE room_id=:room_id", room_id=room_id)
 
+            # reset user vote voted to no
+            db.execute("UPDATE roomjoins SET voted='no' WHERE room_id=:room_id",
+            room_id=room_id
+            )
+
             return redirect("/rooms")
-            
+
+        elif (request.form.get("option") == "close"):
+            # Close Room
+            db.execute("UPDATE rooms SET status='close' WHERE room_id=:room_id", room_id=room_id)
+
+            return redirect("/rooms")
+
         elif (request.form.get("option") == "delete"):
 
             # Delete Room, Votes and Options
@@ -204,6 +215,11 @@ def edit_list():
         room_id = request.form.get("room_id")
         db.execute("UPDATE rooms SET status='edit' WHERE room_id=:room_id", room_id=room_id)
         session['edit_room'] = room_id
+
+        # Update user in the room status to not voted
+        db.execute("UPDATE roomjoins SET voted='no' WHERE room_id=:room_id",
+            room_id=room_id
+            )
 
         return redirect("/createlist")
 
@@ -347,14 +363,15 @@ def dashboard():
         # else if Room is open or close and user voted -> Show Dashboard with ALL results
         elif room_status == "close":
             if not user_voted:
-                # TODO show results and tell user it did not vote:
+                # Show results and tell user it did not vote:
                 message = "You did not Vote! but these are the Results!"
                 room_votes = db.execute("SELECT options.option_name, SUM (voting.vote) AS all_votes \
                     FROM voting \
                     JOIN options ON voting.option_id=options.option_id \
                     WHERE options.room_id=:room_id\
                     GROUP BY (options.option_name) \
-                    ORDER BY all_votes DESC")
+                    ORDER BY all_votes DESC",
+                    room_id=room_id)
 
                 return render_template("dashboard_result.html",
                                         room_votes=room_votes,
@@ -367,7 +384,7 @@ def dashboard():
             
             # Show all results
             else:
-                # TODO: Show dashboar wiht user result
+                # Show dashboard with user result
                 message = "Here are your votes and the Results!"
 
                 # User Votes:
@@ -384,7 +401,9 @@ def dashboard():
                     JOIN options ON voting.option_id=options.option_id \
                     WHERE options.room_id=:room_id\
                     GROUP BY (options.option_name) \
-                    ORDER BY all_votes DESC")
+                    ORDER BY all_votes DESC",
+                    room_id=room_id
+                    )
                     
                 return render_template("dashboard_result.html",
                                         room_votes=room_votes,
@@ -408,7 +427,7 @@ def dashboard():
         options = db.execute("SELECT * FROM options WHERE room_id=:room_id", room_id=room_id)
         room_user_data = db.execute("SELECT * FROM roomjoins WHERE room_id=:room_id AND user_id=:user_id", room_id=room_id, user_id=session['user_id'])
 
-        # TODO Post Results and store in data base
+        # Post Results and store in data base
         for row in options:
 
             vote = request.form.get(str(row['option_id']))
