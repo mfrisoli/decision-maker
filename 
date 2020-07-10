@@ -1,0 +1,16 @@
+[33m125768d[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m)[m Merge branch 'dashboard-vote'
+[33m2db0bec[m[33m ([m[1;32mdashboard-vote[m[33m)[m votes are displayed in dashboard
+[33m9742101[m[33m ([m[1;31morigin/dashboard-vote[m[33m)[m SQL Add all Votes
+[33m162508f[m users can see their votes
+[33m81f0cc8[m[33m ([m[1;31morigin/master[m[33m)[m test htmel
+[33m45494e4[m users can vote
+[33m3e271b4[m Users can vote
+[33m4ef870e[m app dashboard update
+[33m012ef30[m completed task
+[33ma58551e[m Readme Requirments
+[33m3422c52[m showlist options
+[33m8b9cbdb[m Delete votes for delete room
+[33mbfd3b8e[m Create README.md
+[33me96708d[m edits
+[33m132d9cf[m updated roomjoins table
+[33m4ceb320[m First Commit
