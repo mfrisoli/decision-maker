@@ -271,15 +271,21 @@ def godashboard():
     # Check if user is already in this room or has ever been in the room:
     in_room = db.execute("SELECT * FROM roomjoins WHERE room_id=:room_id AND user_id=:user_id", room_id=room_id, user_id=session['user_id'])
 
-    if in_room != 1:
+    if len(in_room) != 1:
         # Add user to room
-        db.execute("INSERT INTO roomjoins (room_id, user_id)\
-            VALUES (:room_id, :user_id)",
+        db.execute("INSERT INTO roomjoins (room_id, user_id, status)\
+            VALUES (:room_id, :user_id, :status)",
             room_id=room_id,
-            user_id=session['user_id']
+            user_id=session['user_id'],
+            status="join"
             )
     else:
         db.execute("UPDATE roomjoins SET status='join' WHERE room_id=:room_id AND user_id=:user_id",
+                    room_id=room_id,
+                    user_id=session['user_id']
+                    )
+    
+    db.execute("UPDATE rooms SET status='open' WHERE room_id=:room_id AND user_id=:user_id",
                     room_id=room_id,
                     user_id=session['user_id']
                     )
@@ -314,34 +320,113 @@ def dashboard():
         # if room is open 
         if room_status == "open":
             if not user_voted:
-                # TODO ask user to vote:
-                return render_template('dashboard.html', room=room, options=options)
+                # Ask user to vote:
+                session['edit_room'] = room_id
+                return render_template('dashboard_vote.html', room=room, options=options)
             
             # user voted -> Show user result only
             else:
-                # TODO: Show dashboar wiht user result
-                pass
+                message = "These are your Votes!, to see the Room Results \
+                           you have to wait the voting finishes!"
+                # Show dashboard wiht user result
+                user_votes = db.execute("SELECT options.option_id, options.option_name, voting.vote \
+                            FROM voting\
+                            JOIN options ON voting.option_id=options.option_id\
+                            WHERE voting.user_id=:user_id AND voting.room_id=:room_id",
+                            user_id=session["user_id"],
+                            room_id=room_id)
+
+                return render_template("dashboard_result.html",
+                                        user_votes=user_votes,
+                                        room=room,
+                                        room_close=False,
+                                        user_voted=user_voted,
+                                        message=message
+                                        )
 
         # else if Room is open or close and user voted -> Show Dashboard with ALL results
         elif room_status == "close":
             if not user_voted:
                 # TODO show results and tell user it did not vote:
-                return render_template('dashboard.html', room=room, options=options)
+                message = "You did not Vote! but these are the Results!"
+                room_votes = db.execute("SELECT options.option_name, SUM (voting.vote) AS all_votes \
+                    FROM voting \
+                    JOIN options ON voting.option_id=options.option_id \
+                    WHERE options.room_id=:room_id\
+                    GROUP BY (options.option_name) \
+                    ORDER BY all_votes DESC")
+
+                return render_template("dashboard_result.html",
+                                        room_votes=room_votes,
+                                        room=room,
+                                        room_close=True,
+                                        user_voted=user_voted,
+                                        message=message
+                                        )
+
             
             # Show all results
             else:
                 # TODO: Show dashboar wiht user result
-                pass
+                message = "Here are your votes and the Results!"
+
+                # User Votes:
+                user_votes = db.execute("SELECT options.option_id, options.option_name, voting.vote \
+                    FROM voting\
+                    JOIN options ON voting.option_id=options.option_id\
+                    WHERE voting.user_id=:user_id AND voting.room_id=:room_id",
+                    user_id=session["user_id"],
+                    room_id=room_id)
+
+                # Room Results
+                room_votes = db.execute("SELECT options.option_name, SUM (voting.vote) AS all_votes \
+                    FROM voting \
+                    JOIN options ON voting.option_id=options.option_id \
+                    WHERE options.room_id=:room_id\
+                    GROUP BY (options.option_name) \
+                    ORDER BY all_votes DESC")
+                    
+                return render_template("dashboard_result.html",
+                                        room_votes=room_votes,
+                                        user_votes=user_votes,
+                                        room=room,
+                                        room_close=True,
+                                        user_voted=user_voted,
+                                        message=message
+                                        )
 
         # Else room is being edited
         else:
-            pass
-            # TODO: check if user voted
-        
+            return apology("room is being edited and not available for voting!")
 
-        return render_template('dashboard.html', room=room, options=options)
+    # else request.method="POST"      
     else:
+
+        # Room Details
+        room_id = session['edit_room']
+        room = db.execute("SELECT * FROM rooms WHERE room_id=:room_id", room_id=room_id)
+        options = db.execute("SELECT * FROM options WHERE room_id=:room_id", room_id=room_id)
+        room_user_data = db.execute("SELECT * FROM roomjoins WHERE room_id=:room_id AND user_id=:user_id", room_id=room_id, user_id=session['user_id'])
+
         # TODO Post Results and store in data base
+        for row in options:
+
+            vote = request.form.get(str(row['option_id']))
+
+            db.execute("INSERT INTO voting (option_id, vote, user_id, room_id)\
+                VALUES (:option_id, :vote, :user_id, :room_id)",
+                option_id=row['option_id'],
+                vote=vote,
+                user_id=session['user_id'],
+                room_id=room_id
+                )
+
+        # Change user to voted="yes"
+        db.execute("UPDATE roomjoins SET voted='yes' WHERE room_id=:room_id AND user_id=:user_id",
+                    room_id=room_id,
+                    user_id=session['user_id']
+                    )
+                    
         return redirect("/dashboard")
 
 

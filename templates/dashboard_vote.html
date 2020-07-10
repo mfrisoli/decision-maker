@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Dashboard
+    Dashboard - Vote
 {% endblock %}
 
 {% block main %}
@@ -15,12 +15,12 @@
                 <th scope="col">Vote</th>
             </tr>
         </thread>
-    <form action="/dashboard" method="get">
+    <form action="/dashboard" method="post">
         {% for row in options %}
             <tbody>
                 <tr>
                     <th scope="row">{{ row['option_name'] }}</th>
-                    <td><input autocomplete="on" autofocus class="form-control" type="number" min="1" required step="1" name={{ row["option_id"] }}></td>
+                    <td><input autofocus class="form-control" type="number" min="1" required step="1" name={{ row["option_id"] }}></td>
                 </tr>
             </tbody>
         {% endfor %}
