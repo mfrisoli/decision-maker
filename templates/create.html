@@ -1,10 +1,19 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Buy
+    Create
 {% endblock %}
 
 {% block main %}
+
+    <ul class="list-group">
+        <p>Follow these simple Steps:</p>
+        <li class="list-group-item"> Create a Room with your topic</li>
+        <li class="list-group-item"> Choose the options</li>
+        <li class="list-group-item"> Vote!</li>
+        <li class="list-group-item"> Share and let your group Vote!</li>
+        <li class="list-group-item"> After everyone votes, Close the room and see the Magic of Decision Maker!</li>
+    </ul>
     <form action="/create" method="post">
         <div class="form-group">
             <p>Are you ready to find an Answer to your group!</p>

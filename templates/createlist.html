@@ -5,6 +5,15 @@
 {% endblock %}
 
 {% block main %}
+<style>
+    tbody {
+        counter-reset: my-sec-counter;
+    }
+    .number::before {
+        counter-increment: my-sec-counter;
+        content: counter(my-sec-counter);
+    }
+</style>
 <h2>Room: {{ room_name }}</h2>
 <p>Room Status: Editing</p>
     <table class="table">
@@ -18,7 +27,7 @@
         <tbody>
             {% for row in room %}
             <tr>
-                <th scope="row">Number</th>
+                <th scope="row"><div class="number"></div></th>
                 <td>
                     {{ row['option_name'] }}
                 </td>
@@ -43,8 +52,9 @@
         </tbody>
     </table>
     <div>
-        <h4>Ready to Vote? Click Here -></h4>
+        <h4>Ready to Vote? Click Below!</h4>
         <form action="/godashboard" method="GET">
+            <input type="hidden" name=index_join value="no">
             <button class="btn btn-primary" name="room_id_join" value={{ room_id }} type="submit">Start Voting!</button>
         </form>
     </div>

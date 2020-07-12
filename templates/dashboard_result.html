@@ -11,7 +11,7 @@
 <h6>{{ message }}</h6>
 {% if user_voted %}
     <div>
-    <h3>This is your Vote!</h3>
+    <h4>This is your Vote!</h4>
         <table class="table">
             <thread>
                 <tr>
@@ -33,7 +33,7 @@
 
 {% if room_close %}
     <div>
-    <h3>These are the Room Results!</h3>
+    <h4>These are the Room Results!</h4>
         <table class="table">
             <thread>
                 <tr>
@@ -50,7 +50,38 @@
                 </tbody>
             {% endfor %}
         </table>
+        <table class="table">
+            <td>
+                <center><divv id="piechart"></divv></center>
+            </td>
+        </table>
     </div>
+
 {% endif %}
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<script type="text/javascript">
+
+// Load Google Charts
+google.charts.load('current', {'packages':['corechart']});
+google.charts.setOnLoadCallback(drawChart);
+
+// Draw the chart on set values
+function drawChart() {
+
+    var data = google.visualization.arrayToDataTable({{ chart_list|tojson }});
+
+
+    var options = {'title':'Vote Results', 'width':550, 'height':400};
+
+    var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+    chart.draw(data, options);
+
+}
+
+</script>
+
 
 {% endblock %}

@@ -172,14 +172,14 @@ def show_rooms():
             # Delete Options:
             db.execute("DELETE FROM options WHERE room_id=:room_id", room_id=room_id)           
 
-            # Delete room table
-            db.execute("DELETE FROM rooms WHERE room_id=:room_id", room_id=room_id)
-
             # Delete roomsjoins table
             db.execute("DELETE FROM roomjoins WHERE room_id=:room_id", room_id=room_id)
 
             # delete votes
             db.execute("DELETE FROM voting WHERE room_id=:room_id", room_id=room_id)
+
+            # Delete room table
+            db.execute("DELETE FROM rooms WHERE room_id=:room_id", room_id=room_id)
 
             return redirect("/rooms")
 
@@ -210,6 +210,7 @@ def edit_list():
         room = db.execute("SELECT * FROM rooms WHERE room_id=:room_id", room_id=room_id)
 
         return render_template("showlist.html", room=room_options, room_name=room[0]['room_name'],  room_id=room_id)
+    
     else:
 
         room_id = request.form.get("room_id")
@@ -220,6 +221,9 @@ def edit_list():
         db.execute("UPDATE roomjoins SET voted='no' WHERE room_id=:room_id",
             room_id=room_id
             )
+        # Delete votes
+        db.execute("DELETE FROM voting WHERE room_id=:room_id", room_id=room_id)
+
 
         return redirect("/createlist")
 
@@ -296,15 +300,16 @@ def godashboard():
             status="join"
             )
     else:
+        # update user to join 
         db.execute("UPDATE roomjoins SET status='join' WHERE room_id=:room_id AND user_id=:user_id",
                     room_id=room_id,
                     user_id=session['user_id']
                     )
-    
-    db.execute("UPDATE rooms SET status='open' WHERE room_id=:room_id AND user_id=:user_id",
-                    room_id=room_id,
-                    user_id=session['user_id']
-                    )
+    if request.args["index_join"] != "yes":
+        db.execute("UPDATE rooms SET status='open' WHERE room_id=:room_id AND user_id=:user_id",
+                        room_id=room_id,
+                        user_id=session['user_id']
+                        )
 
     return redirect("/dashboard")
 
@@ -404,6 +409,13 @@ def dashboard():
                     ORDER BY all_votes DESC",
                     room_id=room_id
                     )
+
+                # Create pie chart list
+                chart_list = [["Option", "Vote"]]
+                for row in room_votes:
+                    temp = [row['option_name'],row['all_votes']]
+                    chart_list.append(temp)
+
                     
                 return render_template("dashboard_result.html",
                                         room_votes=room_votes,
@@ -411,7 +423,8 @@ def dashboard():
                                         room=room,
                                         room_close=True,
                                         user_voted=user_voted,
-                                        message=message
+                                        message=message,
+                                        chart_list=chart_list
                                         )
 
         # Else room is being edited

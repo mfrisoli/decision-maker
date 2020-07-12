@@ -5,6 +5,12 @@
 {% endblock %}
 
 {% block main %}
+<div>
+    <h2>Welcome to Decision Maker!</h2>
+    <h4>This Web Application will help you and your group decide in what to do!</h4>
+    <p>Search below, or create a room and start the vote!</p>
+<br>
+</div>
     <form action="/" method="post">
         <div class="form-group">
             <input autocomplete="on" autofocus class="form-control" name="room_id" placeholder="Room ID" type="text" maxlenght="10" required>
@@ -14,7 +20,7 @@
     <p>{{ message }}</p>
  
     {% if search %}
-        {{ room }}
+    
 
         <table class="table">
             <thread>
@@ -31,9 +37,10 @@
                     <td>{{ room[0]['room_name'] }}</td>
                     <td>{{ room[0]['status'] }}</td>
                     <td>
-                       <form action="/godashboard" method="get">
-                        <button class="btn btn-primary" name=room_id_join value={{ room[0]['room_id'] }} type="submit">Join!</button>
-                       </form>
+                        <form action="/godashboard" method="get">
+                            <input type="hidden" name=index_join value="yes">
+                            <button class="btn btn-primary" name=room_id_join value={{ room[0]['room_id'] }} type="submit">Join!</button>
+                        </form>
                     </td>
                 </tr>
             </tbody>
