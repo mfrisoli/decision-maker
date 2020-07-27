@@ -18,6 +18,10 @@
             <input class="form-control" id="password_con" name="password_con" placeholder="Confirm Password" type="password">
         </div>
         <button class="btn btn-primary" id="submit" type="submit" disabled>Register</button>
+        <br>
+        {% if error %}
+            <p>{{ error }}</p>
+        {% endif %}
 
     </form>
     <p id='password_message'></p>

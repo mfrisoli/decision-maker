@@ -267,17 +267,27 @@ def add_list():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     """Register user"""
-    # Check if user already exists
     if request.method == "GET":
-        return render_template("register.html")
+        return render_template("register.html", error="")
     else:
+        # Get new user details
         username = request.form.get("username")
         password = request.form.get("password")
         hash_pass = generate_password_hash(password)
+        
+        # Check if user already exists
+        user_registered = db.execute("SELECT * FROM users WHERE users.username=:username", username=username)
+
+        if len(user_registered) != 0:
+
+            return render_template("register.html", error="Sorry..user Name already exists")
+        
+        # Else Continue
+
         db.execute("INSERT INTO users (username, hash)\
-            VALUES (:username, :hash)",
-            username=username,
-            hash=hash_pass)
+                 VALUES (:username, :hash)",
+                 username=username,
+                 hash=hash_pass)
 
         return redirect("/login")
 
@@ -294,11 +304,11 @@ def godashboard():
     if len(in_room) != 1:
         # Add user to room
         db.execute("INSERT INTO roomjoins (room_id, user_id, status)\
-            VALUES (:room_id, :user_id, :status)",
-            room_id=room_id,
-            user_id=session['user_id'],
-            status="join"
-            )
+                   VALUES (:room_id, :user_id, :status)",
+                   room_id=room_id,
+                   user_id=session['user_id'],
+                   status="join"
+                   )
     else:
         # update user to join 
         db.execute("UPDATE roomjoins SET status='join' WHERE room_id=:room_id AND user_id=:user_id",
@@ -307,9 +317,9 @@ def godashboard():
                     )
     if request.args["index_join"] != "yes":
         db.execute("UPDATE rooms SET status='open' WHERE room_id=:room_id AND user_id=:user_id",
-                        room_id=room_id,
-                        user_id=session['user_id']
-                        )
+                   room_id=room_id,
+                   user_id=session['user_id']
+                   )
 
     return redirect("/dashboard")
 
@@ -393,7 +403,7 @@ def dashboard():
                 message = "Here are your votes and the Results!"
 
                 # User Votes:
-                user_votes = db.execute("SELECT options.option_id, options.option_name, voting.vote \
+                user_votes = db.execute("SELECT options.option_id, options.option_name, voting.vote\
                     FROM voting\
                     JOIN options ON voting.option_id=options.option_id\
                     WHERE voting.user_id=:user_id AND voting.room_id=:room_id",
@@ -401,7 +411,7 @@ def dashboard():
                     room_id=room_id)
 
                 # Room Results
-                room_votes = db.execute("SELECT options.option_name, SUM (voting.vote) AS all_votes \
+                room_votes = db.execute("SELECT options.option_name, SUM (voting.vote) AS all_votes\
                     FROM voting \
                     JOIN options ON voting.option_id=options.option_id \
                     WHERE options.room_id=:room_id\
@@ -415,17 +425,15 @@ def dashboard():
                 for row in room_votes:
                     temp = [row['option_name'],row['all_votes']]
                     chart_list.append(temp)
-
-                    
+    
                 return render_template("dashboard_result.html",
-                                        room_votes=room_votes,
-                                        user_votes=user_votes,
-                                        room=room,
-                                        room_close=True,
-                                        user_voted=user_voted,
-                                        message=message,
-                                        chart_list=chart_list
-                                        )
+                    room_votes=room_votes,
+                    user_votes=user_votes,
+                    room=room,
+                    room_close=True,
+                    user_voted=user_voted,
+                    message=message,
+                    chart_list=chart_list)
 
         # Else room is being edited
         else:
