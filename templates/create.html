@@ -5,18 +5,22 @@
 {% endblock %}
 
 {% block main %}
-
+    <p>Are you ready to find an Answer to your group!</p>
+    <div style="text-align: left;">
+        
     <ul class="list-group">
-        <p>Follow these simple Steps:</p>
-        <li class="list-group-item"> Create a Room with your topic</li>
-        <li class="list-group-item"> Choose the options</li>
-        <li class="list-group-item"> Vote!</li>
-        <li class="list-group-item"> Share and let your group Vote!</li>
-        <li class="list-group-item"> After everyone votes, Close the room and see the Magic of Decision Maker!</li>
+        <h6>Follow these Steps:</h6>
+        <li> Create a Room with the topic you want to submit for voting</li>
+        <li> Choose the options to vote for</li>
+        <li> Vote!</li>
+        <li> Share and let your group Vote!</li>
+        <li> After everyone votes, Close the room and see the Magic of Decision Maker!</li>
     </ul>
+    </div>
+    <hr>
     <form action="/create" method="post">
         <div class="form-group">
-            <p>Are you ready to find an Answer to your group!</p>
+            <p>Create Room</p>
 
         </div>
         <div class="form-group">

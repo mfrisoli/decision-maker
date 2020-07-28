@@ -6,7 +6,9 @@
 
 {% block main %}
     
- <h1>ROOM: {{ room[0]['room_name'] }}</h1>
+ <h4>ROOM: {{ room[0]['room_name'] }} (id: {{ room[0]['room_id'] }})</h4>
+ <p>Voting points: <here id="message">10</here></p>
+
 
     <table class="table">
         <thread>
@@ -20,11 +22,56 @@
             <tbody>
                 <tr>
                     <th scope="row">{{ row['option_name'] }}</th>
-                    <td><input autofocus class="form-control" type="number" min="1" required step="1" name={{ row["option_id"] }}></td>
+                    <td><input autofocus class="form-control" type="number" min="1" required step="1" name={{ row["option_id"] }} max="10" onkeyup="update_vote()" onclick="update_vote()"></td>
                 </tr>
             </tbody>
         {% endfor %}
     </table>
-        <button class="btn btn-primary" type="submit">Submit Votes!</button>
+        <button id="submit" class="btn btn-primary" type="submit" disabled>Submit Votes!</button>
     </form>
+    <p id="error_m"></p>
+
+    <script>
+        // variable for max
+        
+        var max_votes = 10;
+        function update_vote(){
+            var sum_all = 0;
+            document.querySelector('#submit').disabled = true; 
+            
+            $('.form-control').each(function()
+                {
+                    sum_all += +($(this).val());
+                });
+
+            //sum_all += document.querySelector('.form-control').value;
+            var total_points = max_votes - sum_all
+            
+            if (total_points === 0){
+                // ok continue
+                document.querySelector('#submit').disabled = false;
+                document.getElementById('error_m').innerHTML = "You are good to Go!";
+
+            }
+            else if (total_points > 0){
+                //Positive
+                document.getElementById('error_m').innerHTML = "You need to use all your voting points";  
+            }
+            else {
+                // Negative
+                document.getElementById('error_m').innerHTML = "Exceded max voting points";  
+            }
+
+
+            document.getElementById('message').innerHTML = total_points;
+
+        }
+        
+        // see that is the total value between all options
+        
+        //document.querySelector('.form-control').onkeyup = update;
+
+
+    </script>
+
 {% endblock %}

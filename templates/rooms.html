@@ -7,73 +7,79 @@
 {% block main %}
 
     <div class="form-group">
-        <h3>These are the rooms you own and moderate:</h3>
+        <h5>These are the rooms you own and moderate:</h5>
     </div>
-    <table class="table">
-        <thread>
-            <tr>
-            
-                <th scope="col">Room ID</th>
-                <th scope="col">Room Name</th>
-                <th scope="col">Room Status</th>
-                <th scope="col">Edit Options</th>
-            </tr>
-        </thread>
-        <tbody>
-            {% for row in rooms %}
-            <tr>
-                <th scope="row">{{ row['room_id'] }}</th>
-                <td>{{ row['room_name'] }}</td>
-                <td>{{ row['status'] }}</td>
-                <td>
-                   <form action="/rooms" method="post">
-                    <select class="form-control" id="dropdown-menu" name="option">
-                            <option value="edit">Edit</option>
-                            <option value="reset">Reset</option>
-                            <option value="close">Close</option>
-                            <option value="delete">Delete</option>
-                    </select>
-                    <button class="btn btn-primary" name=room_id value={{ row['room_id'] }} type="submit">Go!</button>
-                   </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-
+    {% if rooms %}
+        <table class="table">
+            <thread>
+                <tr>
+                
+                    <th scope="col">Room ID</th>
+                    <th scope="col">Room Name</th>
+                    <th scope="col">Room Status</th>
+                    <th scope="col">Edit Options</th>
+                </tr>
+            </thread>
+            <tbody>
+                {% for row in rooms %}
+                <tr>
+                    <th scope="row">{{ row['room_id'] }}</th>
+                    <td>{{ row['room_name'] }}</td>
+                    <td>{{ row['status'] }}</td>
+                    <td>
+                    <form action="/rooms" method="post">
+                        <select class="form-control" id="dropdown-menu" name="option">
+                                <option value="edit">Edit</option>
+                                <option value="reset">Reset</option>
+                                <option value="close">Close</option>
+                                <option value="delete">Delete</option>
+                        </select>
+                        <button class="btn btn-primary" name=room_id value={{ row['room_id'] }} type="submit">Go!</button>
+                    </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>You have not created any rooms yet, try <a href="/create">creating</a> one!<p>
+    {% endif %}
+    <br>
+    <hr>
     <div class="form-group">
-        <h3>These are the rooms you can vote:</h3>
+        <h5>These are the rooms you can vote in:</h5>
     </div>
-    <table class="table">
-        <thread>
-            <tr>
-            
-                <th scope="col">Room ID</th>
-                <th scope="col">Room Name</th>
-                <th scope="col">Status</th>
-                <th scope="col">Edit Options</th>
-            </tr>
-        </thread>
-        <tbody>
-            {% for row in rooms_joins %}
-            <tr>
-                <th scope="row">{{ row['room_id'] }}</th>
-                <td>{{ row['room_name'] }}</td>
-                <td>{{ row['status'] }}</td>
-                <td>
-                   <form action="/rooms" method="post">
-                    <select class="form-control" id="dropdown-menu" name="option_joins">
-                            <option value="dashboard">Dashboard</option>
-                            <option value="leave">Leave Room</option>
-                    </select>
-                    <button class="btn btn-primary" name=room_id value={{ row['room_id'] }} type="submit">Go!</button>
-                   </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
+    {% if rooms_joins %}
+        <table class="table">
+            <thread>
+                <tr>
+                    <th scope="col">Room ID</th>
+                    <th scope="col">Room Name</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Edit Options</th>
+                </tr>
+            </thread>
+            <tbody>
+                {% for row in rooms_joins %}
+                <tr>
+                    <th scope="row">{{ row['room_id'] }}</th>
+                    <td>{{ row['room_name'] }}</td>
+                    <td>{{ row['status'] }}</td>
+                    <td>
+                    <form action="/rooms" method="post">
+                        <select class="form-control" id="dropdown-menu" name="option_joins">
+                                <option value="dashboard">Dashboard</option>
+                                <option value="leave">Leave Room</option>
+                        </select>
+                        <button class="btn btn-primary" name=room_id value={{ row['room_id'] }} type="submit">Go!</button>
+                    </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>You are not in any room yet, try <a href="/">searching</a> or <a href="/create">creating</a> a new room.<p>
+    {% endif %}
 
 {% endblock %}

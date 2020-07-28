@@ -411,6 +411,7 @@ def dashboard():
                     room_id=room_id)
 
                 # Room Results
+                #TODO check if there is a tie
                 room_votes = db.execute("SELECT options.option_name, SUM (voting.vote) AS all_votes\
                     FROM voting \
                     JOIN options ON voting.option_id=options.option_id \
@@ -423,7 +424,7 @@ def dashboard():
                 # Create pie chart list
                 chart_list = [["Option", "Vote"]]
                 for row in room_votes:
-                    temp = [row['option_name'],row['all_votes']]
+                    temp = [row['option_name'], row['all_votes']]
                     chart_list.append(temp)
     
                 return render_template("dashboard_result.html",
