@@ -11,7 +11,7 @@
     <p>Search below, or <a href="/create">create</a> a room and start the vote!</p>
 <br>
 </div>
-    <form action="/" method="post">
+    <form action="{{ url_for('index') }}" method="post">
         <div class="form-group">
             <input autocomplete="on" autofocus class="form-control" name="room_id" placeholder="Room ID" type="text" maxlenght="10" required>
         </div>
@@ -20,8 +20,6 @@
     <p>{{ message }}</p>
  
     {% if search %}
-    
-
         <table class="table">
             <thread>
                 <tr>
@@ -37,7 +35,7 @@
                     <td>{{ room[0]['room_name'] }}</td>
                     <td>{{ room[0]['status'] }}</td>
                     <td>
-                        <form action="/godashboard" method="get">
+                        <form action="{{ url_for('godashboard') }}" method="get">
                             <input type="hidden" name=index_join value="yes">
                             <button class="btn btn-primary" name=room_id_join value={{ room[0]['room_id'] }} type="submit">Join!</button>
                         </form>

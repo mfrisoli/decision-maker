@@ -23,9 +23,6 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
-# Custom filter
-# app.jinja_env.filters["usd"] = usd
-
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_FILE_DIR"] = mkdtemp()
 app.config["SESSION_PERMANENT"] = False
@@ -112,7 +109,7 @@ def createroom():
     # if Method is GET Display Room list
     if request.method == "GET":
         return render_template("create.html")
-    # Else 
+    # Else
     else:
         room_name = request.form.get("room_name")
 
@@ -484,4 +481,4 @@ for code in default_exceptions:
     app.errorhandler(code)(errorhandler)
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)

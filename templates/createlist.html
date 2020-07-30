@@ -32,7 +32,7 @@
                     {{ row['option_name'] }}
                 </td>
                 <td>
-                   <form action="/createlist" method="post">
+                   <form action="{{ url_for('add_list') }}" method="post">
                     <button class="btn btn-primary" name="change" value={{ row['option_id'] }} type="submit">Remove</button>
                    </form>
                 </td>
@@ -41,7 +41,7 @@
             <tr>
                 <th scope="row">Add</th>
                 <td>
-                    <form action="/createlist" method="post">
+                    <form action="{{ url_for('add_list') }}" method="post">
                         <input autocomplete="on" autofocus class="form-control" name="option" placeholder="New Option" type="text" maxlength="25" required>
                 </td>
                 <td>
@@ -53,7 +53,7 @@
     </table>
     <div>
         <h4>Ready to Vote? Click Below!</h4>
-        <form action="/godashboard" method="GET">
+        <form action="{{ url_for('godashboard') }}" method="GET">
             <input type="hidden" name=index_join value="no">
             <button class="btn btn-primary" name="room_id_join" value={{ room_id }} type="submit">Start Voting!</button>
         </form>

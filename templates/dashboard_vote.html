@@ -17,7 +17,7 @@
                 <th scope="col">Vote</th>
             </tr>
         </thread>
-    <form action="/dashboard" method="post">
+    <form action="{{ url_for('dashboard') }}" method="post">
         {% for row in options %}
             <tbody>
                 <tr>
@@ -32,9 +32,10 @@
     <p id="error_m"></p>
 
     <script>
-        // variable for max
         
+        // variable for max
         var max_votes = 10;
+        
         function update_vote(){
             var sum_all = 0;
             document.querySelector('#submit').disabled = true; 

@@ -7,7 +7,7 @@
 {% block main %}
     <h2>New User Registration</h2>
     <br>
-    <form action="/register" method="post">
+    <form action="{{ url_for('register') }}" method="post">
         <div class="form-group">
             <input autocomplete="off" autofocus class="form-control" id="username" name="username" placeholder="Username" type="text">
         </div>
@@ -25,6 +25,7 @@
 
     </form>
     <p id='password_message'></p>
+
      <script>
          function validate(){
             if ((document.querySelector('#password').value === '') || (document.querySelector('#password_con').value === '') || (document.querySelector('#username').value === '')){
