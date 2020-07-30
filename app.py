@@ -1,7 +1,7 @@
 import os
 
 from cs50 import SQL
-from flask import Flask, flash, jsonify, redirect, render_template, request, session
+from flask import Flask, flash, jsonify, redirect, render_template, request, session, url_for
 from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
@@ -85,7 +85,7 @@ def login():
         session["username"] = rows[0]["username"]
 
         # Redirect user to home page
-        return redirect("/")
+        return redirect(url_for('index'))
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:
@@ -99,7 +99,7 @@ def logout():
     session.clear()
 
     # Redirect user to login form
-    return redirect("/")
+    return redirect(url_for('index'))
 
 @app.route("/create", methods=["GET", "POST"])
 @login_required
@@ -118,7 +118,7 @@ def createroom():
         room_id = db.execute("SELECT MAX (room_id) AS room_id FROM rooms")
         session['edit_room'] = room_id[0]['room_id']
 
-        return redirect("/createlist")
+        return redirect(url_for('add_list'))
 
 @app.route("/rooms", methods=["GET", "POST"])
 @login_required
@@ -140,7 +140,7 @@ def show_rooms():
             # Go to create list:
             session['edit_room'] = room_id
 
-            return redirect("/createlist")
+            return redirect(url_for('add_list'))
 
         elif (request.form.get("option") == "reset"):
             # Reset all votes on the list
@@ -154,13 +154,13 @@ def show_rooms():
             room_id=room_id
             )
 
-            return redirect("/rooms")
+            return redirect(url_for('show_rooms'))
 
         elif (request.form.get("option") == "close"):
             # Close Room
             db.execute("UPDATE rooms SET status='close' WHERE room_id=:room_id", room_id=room_id)
 
-            return redirect("/rooms")
+            return redirect(url_for('show_rooms'))
 
         elif (request.form.get("option") == "delete"):
 
@@ -178,13 +178,13 @@ def show_rooms():
             # Delete room table
             db.execute("DELETE FROM rooms WHERE room_id=:room_id", room_id=room_id)
 
-            return redirect("/rooms")
+            return redirect(url_for('show_rooms'))
 
         elif request.form.get("option_joins") == "dashboard":
 
             session['edit_room'] = room_id
 
-            return redirect("/dashboard")
+            return redirect(url_for('dashboard'))
 
         elif request.form.get("option_joins") == "leave":
             # leave room and render again /rooms
@@ -193,7 +193,7 @@ def show_rooms():
 
             db.execute("UPDATE roomjoins SET status='leave' WHERE room_id=:room_id AND user_id=:user_id", room_id=room_id, user_id=user_id)
 
-            return redirect("/rooms")
+            return redirect(url_for('show_rooms'))
 
 
 @app.route("/modifylist", methods=["GET", "POST"])
@@ -222,7 +222,7 @@ def edit_list():
         db.execute("DELETE FROM voting WHERE room_id=:room_id", room_id=room_id)
 
 
-        return redirect("/createlist")
+        return redirect(url_for('add_list'))
 
 
 @app.route("/createlist", methods=["GET", "POST"])
@@ -241,7 +241,7 @@ def add_list():
         else:
             
             # room_id = session['edit_room']
-            return redirect("/modifylist")
+            return redirect(url_for('edit_list'))
 
     else:
         if request.form.get("add") == "add":
@@ -251,7 +251,7 @@ def add_list():
             # Add Option to option table
             db.execute("INSERT INTO options (option_name, room_id) VALUES (:option_name, :room_id)", option_name=new_option, room_id=room_id)
             
-            return redirect("/createlist")
+            return redirect(url_for('add_list'))
 
         else:
             option_id = request.form.get("change") # option_id
@@ -259,7 +259,7 @@ def add_list():
             # Remove Option from options table option_id
             db.execute("DELETE FROM options WHERE option_id=:option_id", option_id=option_id)
 
-            return redirect("/createlist")
+            return redirect(url_for('add_list'))
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -286,7 +286,7 @@ def register():
                  username=username,
                  hash=hash_pass)
 
-        return redirect("/login")
+        return redirect(url_for('login'))
 
 
 @app.route("/godashboard")
@@ -318,7 +318,7 @@ def godashboard():
                    user_id=session['user_id']
                    )
 
-    return redirect("/dashboard")
+    return redirect(url_for('dashboard'))
 
 @app.route("/dashboard", methods=["GET", "POST"])
 @login_required
@@ -465,7 +465,7 @@ def dashboard():
                     user_id=session['user_id']
                     )
                     
-        return redirect("/dashboard")
+        return redirect(url_for('dashboard'))
 
 
 def errorhandler(e):
@@ -481,4 +481,4 @@ for code in default_exceptions:
     app.errorhandler(code)(errorhandler)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()

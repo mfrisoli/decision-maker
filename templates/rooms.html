@@ -66,7 +66,7 @@
                     <td>{{ row['room_name'] }}</td>
                     <td>{{ row['status'] }}</td>
                     <td>
-                    <form action="{{ url_show('show_rooms') }}" method="post">
+                    <form action="{{ url_for('show_rooms') }}" method="post">
                         <select class="form-control" id="dropdown-menu" name="option_joins">
                                 <option value="dashboard">Dashboard</option>
                                 <option value="leave">Leave Room</option>
