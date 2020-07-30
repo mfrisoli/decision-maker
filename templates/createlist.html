@@ -5,59 +5,97 @@
 {% endblock %}
 
 {% block main %}
-<style>
-    tbody {
-        counter-reset: my-sec-counter;
-    }
-    .number::before {
-        counter-increment: my-sec-counter;
-        content: counter(my-sec-counter);
-    }
-</style>
-<h2>Room: {{ room_name }}</h2>
-<p>Room Status: Editing</p>
-    <table class="table">
-        <thread>
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">Option Name</th>
-                <th scope="col">Add/Remove</th>
-            </tr>
-        </thread>
-        <tbody>
-            {% for row in room %}
-            <tr>
-                <th scope="row"><div class="number"></div></th>
-                <td>
-                    {{ row['option_name'] }}
-                </td>
-                <td>
-                   <form action="{{ url_for('add_list') }}" method="post">
-                    <button class="btn btn-primary" name="change" value={{ row['option_id'] }} type="submit">Remove</button>
-                   </form>
-                </td>
-            </tr>
-            {% endfor %}
-            <tr>
-                <th scope="row">Add</th>
-                <td>
+
+    <style>
+        tbody {
+            counter-reset: my-sec-counter;
+        }
+        .number::before {
+            counter-increment: my-sec-counter;
+            content: counter(my-sec-counter);
+        }
+    </style>
+    <body onload="enable_submit()">
+    <h3>Room: {{ room_name }} (id: {{ room_id }})</h3>
+    <p>Status: Editing</p>
+        <table class="table">
+            <thread>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Option Name</th>
+                    <th scope="col">Add/Remove</th>
+                </tr>
+            </thread>
+            <tbody>
+                {% for row in room %}
+                <tr>
+                    <th scope="row"><div class="number"></div></th>
+                    <td>
+                        {{ row['option_name'] }}
+                    </td>
+                    <td>
                     <form action="{{ url_for('add_list') }}" method="post">
-                        <input autocomplete="on" autofocus class="form-control" name="option" placeholder="New Option" type="text" maxlength="25" required>
-                </td>
-                <td>
-                        <button class="btn btn-primary" name="add" value="add" type="submit">Add</button>
+                        <button class="btn btn-primary" name="change" value={{ row['option_id'] }} type="submit">Remove</button>
+                        <input type="hidden" class="enable-id" value="1">
                     </form>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <div>
-        <h4>Ready to Vote? Click Below!</h4>
-        <form action="{{ url_for('godashboard') }}" method="GET">
-            <input type="hidden" name=index_join value="no">
-            <button class="btn btn-primary" name="room_id_join" value={{ room_id }} type="submit">Start Voting!</button>
-        </form>
-    </div>
+                    </td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <th scope="row">Add</th>
+                    <td>
+                        <form action="{{ url_for('add_list') }}" method="post">
+                            <input autocomplete="on" autofocus class="form-control" name="option" placeholder="New Option" type="text" maxlength="25" required>
+                    </td>
+                    <td>
+                            <button class="btn btn-primary" name="add" value="add" type="submit">Add</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+        <div>
+            <h6>Ready to Vote? Click Below!</h6>
+            <form action="{{ url_for('godashboard') }}" method="GET">
+                <input type="hidden" name=index_join value="no">
+                <button id="submit-button-1" class="btn btn-primary" name="room_id_join" value={{ room_id }} type="submit" disabled>Start Voting!</button>
+            </form>
+        </div>
+        <div>
+            <p id="message" style="margin-top: 4px;">here</p>
+        </div>
+    </body>
+
+    <script>
+
+        function enable_submit(){
+
+            var sum_all = 0;
+            document.querySelector('#submit-button-1').disabled = true;
+            
+            $('.enable-id').each(function()
+                {
+                    sum_all += +($(this).val());
+                });
+    
+            document.getElementById('message').innerHTML = sum_all;
+
+            if (1 < sum_all && sum_all < 6){
+                document.querySelector('#submit-button-1').disabled = false;
+                document.getElementById('message').innerHTML = "Good to Go!";
+            }
+            else if(sum_all > 5){
+                document.querySelector('#submit-button-1').disabled = true;
+                document.getElementById('message').innerHTML = "You can only have 5 options, remove " + (sum_all - 5) + " to continue.";
+            }
+            else {
+                document.querySelector('#submit-button-1').disabled = true;
+                document.getElementById('message').innerHTML = "You need at least 2 options, add " + (2 - sum_all) + " more to continue.";
+            }
+            
+        }
+    </script>
 
 {% endblock %}
 
