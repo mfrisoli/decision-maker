@@ -554,7 +554,7 @@ def dashboard():
                     ).filter(
                         Votes.room_id==room_id
                     ).group_by(
-                        Votes.option_id
+                        Options
                     ).order_by(
                         desc('total')).all()
 
