@@ -11,11 +11,12 @@ app = Flask(__name__)
 ENVI = 'prod'
 
 # Configuration Values
-if ENVI == 'dev':
-    app.config['SQLALCHEMY_DATABASE_URI'] = r'sqlite:///datab_2.db' # Tells SQLalchemy how to connect to the database
+#if ENVI == 'dev':
+#   app.config['SQLALCHEMY_DATABASE_URI'] = r'sqlite:///datab_2.db' # Tells SQLalchemy how to connect to the database
     
-else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = r'postgres://yepxumatvbvtgd:c064cfaf1dc788c861a7e091c64c437d3a093362766396b1ffbd814f72992510@ec2-54-75-229-28.eu-west-1.compute.amazonaws.com:5432/d79hn0blvq7o6b'
+#else:
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://yepxumatvbvtgd:c064cfaf1dc788c861a7e091c64c437d3a093362766396b1ffbd814f72992510@ec2-54-75-229-28.eu-west-1.compute.amazonaws.com:5432/d79hn0blvq7o6b'
+app.config['SECRET_KEY'] = 'sdfs5df5sdfsgsdkgnsdlkfsdf5fdsd5fs5dfsdf4s5df5sd'
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
