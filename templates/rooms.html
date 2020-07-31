@@ -23,9 +23,9 @@
             <tbody>
                 {% for row in rooms %}
                 <tr>
-                    <th scope="row">{{ row['room_id'] }}</th>
-                    <td>{{ row['room_name'] }}</td>
-                    <td>{{ row['status'] }}</td>
+                    <th scope="row">{{ row.id }}</th>
+                    <td>{{ row.name }}</td>
+                    <td>{{ row.status }}</td>
                     <td>
                     <form action="{{ url_for('show_rooms') }}" method="post">
                         <select class="form-control" id="dropdown-menu" name="option">
@@ -34,7 +34,7 @@
                                 <option value="close">Close</option>
                                 <option value="delete">Delete</option>
                         </select>
-                        <button class="btn btn-primary" name=room_id value={{ row['room_id'] }} type="submit">Go!</button>
+                        <button class="btn btn-primary" name=room_id value={{ row.id }} type="submit">Go!</button>
                     </form>
                     </td>
                 </tr>
@@ -62,16 +62,16 @@
             <tbody>
                 {% for row in rooms_joins %}
                 <tr>
-                    <th scope="row">{{ row['room_id'] }}</th>
-                    <td>{{ row['room_name'] }}</td>
-                    <td>{{ row['status'] }}</td>
+                    <th scope="row">{{ row.rooms.id }}</th>
+                    <td>{{ row.rooms.name }}</td>
+                    <td>{{ row.rooms.status }}</td>
                     <td>
                     <form action="{{ url_for('show_rooms') }}" method="post">
                         <select class="form-control" id="dropdown-menu" name="option_joins">
                                 <option value="dashboard">Dashboard</option>
                                 <option value="leave">Leave Room</option>
                         </select>
-                        <button class="btn btn-primary" name=room_id value={{ row['room_id'] }} type="submit">Go!</button>
+                        <button class="btn btn-primary" name=room_id value={{ row.rooms.id }} type="submit">Go!</button>
                     </form>
                     </td>
                 </tr>

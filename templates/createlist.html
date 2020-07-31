@@ -31,11 +31,11 @@
                 <tr>
                     <th scope="row"><div class="number"></div></th>
                     <td>
-                        {{ row['option_name'] }}
+                        {{ row.name }}
                     </td>
                     <td>
                     <form action="{{ url_for('add_list') }}" method="post">
-                        <button class="btn btn-primary" name="change" value={{ row['option_id'] }} type="submit">Remove</button>
+                        <button class="btn btn-primary" name="change" value={{ row.id }} type="submit">Remove</button>
                         <input type="hidden" class="enable-id" value="1">
                     </form>
                     </td>

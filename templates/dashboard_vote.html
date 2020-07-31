@@ -6,7 +6,7 @@
 
 {% block main %}
     
- <h4>ROOM: {{ room[0]['room_name'] }} (id: {{ room[0]['room_id'] }})</h4>
+ <h4>ROOM: {{ room.name }} (id: {{ room.id }})</h4>
  <p>Voting points: <here id="message">10</here></p>
 
 
@@ -21,8 +21,8 @@
         {% for row in options %}
             <tbody>
                 <tr>
-                    <th scope="row">{{ row['option_name'] }}</th>
-                    <td><input autofocus class="form-control" type="number" min="1" required step="1" name={{ row["option_id"] }} max="10" onkeyup="update_vote()" onclick="update_vote()"></td>
+                    <th scope="row">{{ row.name }}</th>
+                    <td><input autofocus class="form-control" type="number" min="1" required step="1" name={{ row.id }} max="10" onkeyup="update_vote()" onclick="update_vote()"></td>
                 </tr>
             </tbody>
         {% endfor %}

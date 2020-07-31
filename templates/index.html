@@ -33,13 +33,13 @@
             </thread>
             <tbody>
                 <tr>
-                    <th scope="row">{{ room[0]['room_id'] }}</th>
-                    <td>{{ room[0]['room_name'] }}</td>
-                    <td>{{ room[0]['status'] }}</td>
+                    <th scope="row">{{ room.id }}</th>
+                    <td>{{ room.name }}</td>
+                    <td>{{ room.status }}</td>
                     <td>
                         <form action="{{ url_for('godashboard') }}" method="get">
                             <input type="hidden" name=index_join value="yes">
-                            <button class="btn btn-primary" name=room_id_join value={{ room[0]['room_id'] }} type="submit">Join!</button>
+                            <button class="btn btn-primary" name=room_id_join value={{ room.id }} type="submit">Join!</button>
                         </form>
                     </td>
                 </tr>
