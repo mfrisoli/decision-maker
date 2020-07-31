@@ -8,7 +8,7 @@ from cs50 import SQL
 # Configure application
 app = Flask(__name__)
 
-ENVI = 'dev'
+ENVI = 'prod'
 
 # Configuration Values
 if ENVI == 'dev':
