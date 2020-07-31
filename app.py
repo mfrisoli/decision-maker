@@ -31,18 +31,16 @@ def index():
         return render_template("index.html", search=False)
     else:
         room_id = request.form.get("room_id")
-
-            #room = db.execute("SELECT * FROM rooms WHERE room_id=:room_id", room_id=room_id)
-
         room = Rooms.query.filter_by(id=room_id).first()
 
-
         if not room:
-            return render_template("index.html", search=False, message="Room not Found")
+            return render_template(
+                       "index.html",
+                       search=False,
+                       message="Room not Found")
 
         else:
             return render_template("index.html", room=room, search=True)
-
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -64,10 +62,8 @@ def login():
             return apology("must provide password", 403)
 
         # Query database for username
-        #rows = db.execute("SELECT * FROM users WHERE username = :username",
-        #                  username=request.form.get("username"))
-
-        user = Users.query.filter_by(username=request.form.get("username")).first()
+        user = Users.query.filter_by(
+                   username=request.form.get("username")).first()
 
         # Ensure username exists and password is correct
         if not user or not check_password_hash(user.hash, request.form.get("password")):
@@ -84,6 +80,7 @@ def login():
     else:
         return render_template("login.html")
 
+
 @app.route("/logout")
 def logout():
     """Log user out"""
@@ -93,6 +90,7 @@ def logout():
 
     # Redirect user to login form
     return redirect(url_for('index'))
+
 
 @app.route("/create", methods=["GET", "POST"])
 @login_required
@@ -105,34 +103,38 @@ def createroom():
     # Else
     else:
         # room_name = request.form.get("room_name")
-        # create_room(db, room_name, session['user_id'])
         
         # Create Room
-        room = Rooms(name=request.form.get("room_name"), user_id=session['user_id'])  
+        room = Rooms(name=request.form.get(
+                   "room_name"), user_id=session['user_id'])  
         db.session.add(room)
-        db.session.commit()
+        #db.session.commit()
         
         # Make user Join room
         join_room = Roomjoins(room_id=room.id, user_id=session['user_id'])
         db.session.add(join_room)
         db.session.commit()
-         #room_id = db.execute("SELECT MAX (room_id) AS room_id FROM rooms")
+
+        # Pass Room Id to Session
         session['edit_room'] = room.id
 
         return redirect(url_for('add_list'))
+
 
 @app.route("/rooms", methods=["GET", "POST"])
 @login_required
 def show_rooms():
     if request.method == "GET":
         # Room user owns and moderates
-            #rooms = db.execute("SELECT * FROM rooms WHERE user_id=:user_id", user_id=session['user_id'])
         rooms = Rooms.query.filter_by(user_id=session['user_id']).all()
 
         # Rooms user is part of and can vote
-            #rooms_joins = db.execute("SELECT * FROM rooms WHERE room_id IN (SELECT room_id FROM roomjoins WHERE user_id=:user_id AND status='join')", user_id=session['user_id'])
         rooms_joins = Roomjoins.query.filter_by(user_id=session['user_id'], status='join').all()
-        return render_template("rooms.html", rooms=rooms, rooms_joins=rooms_joins)
+
+        return render_template(
+                   "rooms.html",
+                   rooms=rooms,
+                   rooms_joins=rooms_joins)
 
     else:
         room_id = request.form.get("room_id")
@@ -145,21 +147,17 @@ def show_rooms():
             return redirect(url_for('add_list'))
 
         elif (request.form.get("option") == "reset"):
+
             # Reset all votes on the list
-                #db.execute("DELETE FROM voting WHERE room_id=:room_id", room_id=room_id)
             Votes.query.filter_by(room_id=room_id).delete()
-            db.session.commit()
+            #db.session.commit()
 
             # Change Status of room to open
-                #db.execute("UPDATE rooms SET status='open' WHERE room_id=:room_id", room_id=room_id)
             update = Rooms.query.filter_by(id=room_id).first()
             update.status = 'open'
-            db.session.commit()
+            #db.session.commit()
 
             # reset user vote voted to no
-                #db.execute("UPDATE roomjoins SET voted='no' WHERE room_id=:room_id",
-                #room_id=room_id
-                #)
             update = Roomjoins.query.filter_by(room_id=room_id).first()
             update.voted = 'no'
             db.session.commit()
@@ -167,8 +165,8 @@ def show_rooms():
             return redirect(url_for('show_rooms'))
 
         elif (request.form.get("option") == "close"):
+
             # Close Room
-                #db.execute("UPDATE rooms SET status='close' WHERE room_id=:room_id", room_id=room_id)
             update = Rooms.query.filter_by(id=room_id).first()
             update.status = 'close'
             db.session.commit()
@@ -180,22 +178,18 @@ def show_rooms():
             # Delete Room, Votes and Options
             
             # Delete Options:
-                #db.execute("DELETE FROM options WHERE room_id=:room_id", room_id=room_id)
             Options.query.filter_by(room_id=room_id).delete()
-            db.session.commit()          
+            #db.session.commit()          
 
             # Delete roomsjoins table
-                #db.execute("DELETE FROM roomjoins WHERE room_id=:room_id", room_id=room_id)
             Roomjoins.query.filter_by(room_id=room_id).delete()
-            db.session.commit()
+            #db.session.commit()
 
             # delete votes
-                #db.execute("DELETE FROM voting WHERE room_id=:room_id", room_id=room_id)
             Votes.query.filter_by(room_id=room_id).delete()
-            db.session.commit()
+            #db.session.commit()
         
             # Delete room table
-                #db.execute("DELETE FROM rooms WHERE room_id=:room_id", room_id=room_id)
             Rooms.query.filter_by(id=room_id).delete()
             db.session.commit()
 
@@ -208,12 +202,14 @@ def show_rooms():
             return redirect(url_for('dashboard'))
 
         elif request.form.get("option_joins") == "leave":
+
             # leave room and render again /rooms
             room_id = request.form.get("room_id")
             user_id = session['user_id']
 
-                #db.execute("UPDATE roomjoins SET status='leave' WHERE room_id=:room_id AND user_id=:user_id", room_id=room_id, user_id=user_id)
-            update = Roomjoins.query.filter_by(room_id=room_id, user_id=user_id).first()
+            update = Roomjoins.query.filter_by(
+                     room_id=room_id, user_id=user_id).first()
+
             update.status = 'leave'
             db.session.commit()
 
@@ -227,35 +223,29 @@ def edit_list():
     if request.method =="GET":
 
         room_id = session['edit_room']
-        room_options = db.execute("SELECT * FROM options WHERE room_id=:room_id", room_id=room_id)
         room_options = Options.query.filter_by(room_id=room_id).all()
-
-            #room = db.execute("SELECT * FROM rooms WHERE room_id=:room_id", room_id=room_id)
         room = Rooms.query.filter_by(id=room_id).first()
 
-        return render_template("showlist.html", room=room_options, room_name=room.name, room_id=room_id)
+        return render_template(
+                   "showlist.html",
+                   room=room_options,
+                   room_name=room.name,
+                   room_id=room_id)
     
     else:
 
         room_id = request.form.get("room_id")
-            #db.execute("UPDATE rooms SET status='edit' WHERE room_id=:room_id", room_id=room_id)
         Rooms.query.filter_by(id=room_id).update( {Rooms.status: 'edit' } )
-        db.session.commit()
+        #db.session.commit()
 
         session['edit_room'] = room_id
 
-        # Update user in the room status to not voted
-            #db.execute("UPDATE roomjoins SET voted='no' WHERE room_id=:room_id",
-            #    room_id=room_id
-            #    )
         Roomsjoins.query.filter_by(room_id=room_id).update( {Roomjoins.voted: 'no'} )
-        db.session.commit()
+        #db.session.commit()
 
         # Delete votes
-            # db.execute("DELETE FROM voting WHERE room_id=:room_id", room_id=room_id)
         Votes.query.filter_by(room_id=room_id).delete()
         db.session.commit()
-
 
         return redirect(url_for('add_list'))
 
@@ -264,17 +254,20 @@ def edit_list():
 @login_required
 def add_list():
     if request.method == "GET":
-        # check if room is already voting or closed, else it can be modified
+        # check if room is already voting or closed,
+        #  else it can be modified
         room_id = session['edit_room']
-            #room_options = db.execute("SELECT * FROM options WHERE room_id=:room_id", room_id=room_id)
         room_options = Options.query.filter_by(room_id=room_id).all()
         
-            #room = db.execute("SELECT * FROM rooms WHERE room_id=:room_id", room_id=room_id)
         room = Rooms.query.filter_by(id=room_id).first()
 
         if room.status == 'edit':
 
-            return render_template("createlist.html", room=room_options, room_name=room.name, room_id=room_id)
+            return render_template(
+                       "createlist.html",
+                       room=room_options,
+                       room_name=room.name,
+                       room_id=room_id)
         
         else:
             
@@ -287,7 +280,6 @@ def add_list():
             room_id = session['edit_room']
 
             # Add Option to option table
-                #db.execute("INSERT INTO options (option_name, room_id) VALUES (:option_name, :room_id)", option_name=new_option, room_id=room_id)
             option = Options(name=new_option, room_id=room_id)
             db.session.add(option)
             db.session.commit()
@@ -298,12 +290,12 @@ def add_list():
             option_id = request.form.get("change") # option_id
 
             # Remove Option from options table option_id
-                #db.execute("DELETE FROM options WHERE option_id=:option_id", option_id=option_id)
             option = Options.query.filter_by(id=option_id).first()
             db.session.delete(option)
             db.session.commit()
 
             return redirect(url_for('add_list'))
+
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -318,21 +310,16 @@ def register():
         # Check if user already exists
         user = Users.query.filter_by(username=username).first()
 
-            #user_registered = db.execute("SELECT * FROM users WHERE users.username=:username", username=username)
-
         if user:
 
-            return render_template("register.html", error="Sorry..user Name already exists")
+            return render_template(
+                       "register.html",
+                       error="Sorry..user Name already exists")
         
         # Else Continue and Add User
         user = Users(username=username, hash=hash_pass)
         db.session.add(user)
         db.session.commit()
-
-            #db.execute("INSERT INTO users (username, hash)\
-            #         VALUES (:username, :hash)",
-            #         username=username,
-            #         hash=hash_pass)
 
         return redirect(url_for('login'))
 
@@ -344,19 +331,13 @@ def godashboard():
     session["edit_room"] = room_id
 
     # Check if user is already in this room or has ever been in the room:
-        #in_room = db.execute("SELECT * FROM roomjoins WHERE room_id=:room_id AND user_id=:user_id", room_id=room_id, user_id=session['user_id'])
-    in_room = Roomjoins.query.filter_by(room_id=room_id, user_id=session['user_id']).first()
+    in_room = Roomjoins.query.filter_by(
+                  room_id=room_id,
+                  user_id=session['user_id']).first()
 
 
     if not in_room:
         # Add user to room
-            #db.execute("INSERT INTO roomjoins (room_id, user_id, status)\
-            #           VALUES (:room_id, :user_id, :status)",
-            #           room_id=room_id,
-            #           user_id=session['user_id'],
-            #           status="join"
-            #           )
-
         user_to_room = Roomjoins(room_id=room_id, user_id=session['user_id'])
         db.session.add(user_to_room)
         db.session.commit()
@@ -366,35 +347,26 @@ def godashboard():
         user_to_room = in_room
         user_to_room.status = 'join'
         db.session.commit()
-            #db.execute("UPDATE roomjoins SET status='join' WHERE room_id=:room_id AND user_id=:user_id",
-            #            room_id=room_id,
-            #            user_id=session['user_id']
-            #            )
+           
     if request.args["index_join"] != "yes":
-            #db.execute("UPDATE rooms SET status='open' WHERE room_id=:room_id AND user_id=:user_id",
-            #           room_id=room_id,
-            #           user_id=session['user_id']
-            #           )
+
         room_status = Rooms.query.filter_by(id=room_id, user_id=session['user_id']).first()
         room_status.status = 'open'
         db.session.commit()
 
     return redirect(url_for('dashboard'))
 
+
 @app.route("/dashboard", methods=["GET", "POST"])
 @login_required
 def dashboard():
 
-
     if request.method == "GET":
         # Get Room and Room Options information
 
-        room_id = session['edit_room']
-            #room = db.execute("SELECT * FROM rooms WHERE room_id=:room_id", room_id=room_id)
-        room = Rooms.query.filter_by(id=room_id).first()
-            #options = db.execute("SELECT * FROM options WHERE room_id=:room_id", room_id=room_id)
-        options = Options.query.filter_by(room_id=room_id).all()
-            #room_user_data = db.execute("SELECT * FROM roomjoins WHERE room_id=:room_id AND user_id=:user_id", room_id=room_id, user_id=session['user_id'])
+        room_id = session['edit_room']     
+        room = Rooms.query.filter_by(id=room_id).first()     
+        options = Options.query.filter_by(room_id=room_id).all()  
         room_user_data = Roomjoins.query.filter_by(room_id=room_id, user_id=session['user_id']).first()
 
         # Room is open:
@@ -414,21 +386,19 @@ def dashboard():
             if not user_voted:
                 # Ask user to vote:
                 session['edit_room'] = room_id
-                return render_template('dashboard_vote.html', room=room, options=options)
+                return render_template(
+                           'dashboard_vote.html',
+                           room=room,
+                           options=options)
             
             # user voted -> Show user result only
             else:
                 message = "These are your Votes!, to see the Room Results \
                            you have to wait the voting finishes!"
                 # Show dashboard with user result
-                    #user_votes = db.execute("SELECT options.option_id, options.option_name, voting.vote \
-                    #            FROM voting\
-                    #            JOIN options ON voting.option_id=options.option_id\
-                    #            WHERE voting.user_id=:user_id AND voting.room_id=:room_id",
-                    #            user_id=session["user_id"],
-                    #            room_id=room_id)
-
-                user_votes = Votes.query.filter_by(user_id=session["user_id"], room_id=room_id).all()
+                user_votes = Votes.query.filter_by(
+                    user_id=session["user_id"],
+                    room_id=room_id).all()
                 
                 return render_template("dashboard_result.html",
                                         user_votes=user_votes,
@@ -443,20 +413,15 @@ def dashboard():
             if not user_voted:
                 # Show results and tell user it did not vote:
                 message = "You did not Vote! but these are the Results!"
-                    #room_votes = db.execute("SELECT options.option_name, SUM (voting.vote) AS all_votes \
-                    #    FROM voting \
-                    #    JOIN options ON voting.option_id=options.option_id \
-                    #    WHERE options.room_id=:room_id\
-                    #    GROUP BY (options.option_name) \
-                    #    ORDER BY all_votes DESC",
-                    #    room_id=room_id)
+                    
                 # Get Query Data
                 room_votes = db.session.query(Options, func.sum(Votes.vote).label('total')).join(Options.votes).filter(Votes.room_id==room_id).group_by(Votes.option_id).order_by(desc('total')).all()
 
                 # Convert List(tuple) in to List(Dict)
                 room_results = []
                 for row in room_votes:
-                    room_results.append({'option_name':row[0].name, 'all_votes':row[1]})
+                    room_results.append(
+                        {'option_name':row[0].name, 'all_votes':row[1]})
             
 
                 return render_template("dashboard_result.html",
@@ -474,32 +439,27 @@ def dashboard():
                 message = "Here are your votes and the Results!"
 
                 # User Votes:
-                    #user_votes = db.execute("SELECT options.option_id, options.option_name, voting.vote\
-                    #    FROM voting\
-                    #    JOIN options ON voting.option_id=options.option_id\
-                    #    WHERE voting.user_id=:user_id AND voting.room_id=:room_id",
-                    #    user_id=session["user_id"],
-                    #    room_id=room_id)
-
-                user_votes = Votes.query.filter_by(user_id=session["user_id"], room_id=room_id).all()
+                user_votes = Votes.query.filter_by(
+                    user_id=session["user_id"], room_id=room_id).all()
 
                 # Room Results
                 #TODO check if there is a tie
-                        #room_votes = db.execute("SELECT options.option_name, SUM (voting.vote) AS all_votes\
-                        #    FROM voting \
-                        #    JOIN options ON voting.option_id=options.option_id \
-                        #    WHERE options.room_id=:room_id\
-                        #    GROUP BY (options.option_name) \
-                        #    ORDER BY all_votes DESC",
-                        #    room_id=room_id
-                        #    )
-
-                room_votes = db.session.query(Options, func.sum(Votes.vote).label('total')).join(Options.votes).filter(Votes.room_id==room_id).group_by(Votes.option_id).order_by(desc('total')).all()
+                room_votes = db.session.query(
+                        Options, func.sum(Votes.vote).label('total')
+                    ).join(
+                        Options.votes
+                    ).filter(
+                        Votes.room_id==room_id
+                    ).group_by(
+                        Votes.option_id
+                    ).order_by(
+                        desc('total')).all()
 
                 # Convert List(tuple) in to List(Dict)
                 room_results = []
                 for row in room_votes:
-                    room_results.append({'option_name':row[0].name, 'all_votes':row[1]})
+                    room_results.append(
+                        {'option_name':row[0].name, 'all_votes':row[1]})
 
                 # Create pie chart list
                 chart_list = [["Option", "Vote"]]
@@ -524,13 +484,9 @@ def dashboard():
 
         # Room Details
         room_id = session['edit_room']
-            #room = db.execute("SELECT * FROM rooms WHERE room_id=:room_id", room_id=room_id)
         room = Rooms.query.filter_by(id=room_id).first()
-            #options = db.execute("SELECT * FROM options WHERE room_id=:room_id", room_id=room_id)
         options = Options.query.filter_by(room_id=room_id).all()
         
-            #room_user_data = db.execute("SELECT * FROM roomjoins WHERE room_id=:room_id AND user_id=:user_id", room_id=room_id, user_id=session['user_id'])
-
         room_user_data = Roomjoins.query.filter_by(room_id=room_id, user_id=session['user_id']).first()
 
         # get Post Results and store in data base
@@ -538,27 +494,17 @@ def dashboard():
 
             vote = request.form.get(str(row.id))
 
-            cast_vote = Votes(vote=vote, option_id=row.id, user_id=session['user_id'], room_id=room_id)
+            cast_vote = Votes(vote=vote, option_id=row.id,
+                              user_id=session['user_id'], room_id=room_id)
             db.session.add(cast_vote)
             db.session.commit()
-                #db.execute("INSERT INTO voting (option_id, vote, user_id, room_id)\
-                #    VALUES (:option_id, :vote, :user_id, :room_id)",
-                #    option_id=row['option_id'],
-                #    vote=vote,
-                #    user_id=session['user_id'],
-                #    room_id=room_id
-                #    )
 
         # Change user to voted="yes"
-        user_vote_status = Roomjoins.query.filter_by(room_id=room_id, user_id=session['user_id']).first()
+        user_vote_status = Roomjoins.query.filter_by(
+            room_id=room_id, user_id=session['user_id']).first()
         user_vote_status.voted = 'yes'
         db.session.commit()
-
-            #db.execute("UPDATE roomjoins SET voted='yes' WHERE room_id=:room_id AND user_id=:user_id",
-            #            room_id=room_id,
-            #            user_id=session['user_id']
-            #            )
-            #            
+            
         return redirect(url_for('dashboard'))
 
 
@@ -567,7 +513,6 @@ def errorhandler(e):
     if not isinstance(e, HTTPException):
         e = InternalServerError()
     return apology(e.name, e.code)
-
 
 
 # Listen for errors
