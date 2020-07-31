@@ -35,20 +35,6 @@ def login_required(f):
     return decorated_function
 
 
-def create_room(database, room_name, user_id):
-            """Creates a Room and makes USER join room"""
-            database.execute("INSERT INTO rooms (room_name, user_id)\
-                    VALUES (:room_name, :user_id)",
-                    room_name=room_name,
-                    user_id=user_id)
-            
-            room_id = database.execute("SELECT MAX (room_id) AS room_id FROM rooms")
-
-            database.execute("INSERT INTO roomjoins (room_id, user_id, status)\
-                VALUES (:room_id, :user_id, :status)",
-                room_id=room_id[0]['room_id'],
-                user_id=user_id,
-                status='join')
 
     
     
