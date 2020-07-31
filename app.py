@@ -10,7 +10,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy import desc
 from sqlalchemy.sql import func
 
-from helpers import apology, login_required, create_room
+from helpers import apology, login_required
 
 
 # Ensure responses aren't cached
