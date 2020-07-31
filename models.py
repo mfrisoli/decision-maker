@@ -8,8 +8,15 @@ from cs50 import SQL
 # Configure application
 app = Flask(__name__)
 
+ENVI = 'dev'
+
 # Configuration Values
-app.config['SQLALCHEMY_DATABASE_URI'] = r'sqlite:///datab_2.db' # Tells SQLalchemy how to connect to the database
+if ENVI == 'dev':
+    app.config['SQLALCHEMY_DATABASE_URI'] = r'sqlite:///datab_2.db' # Tells SQLalchemy how to connect to the database
+    
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = r'postgres://yepxumatvbvtgd:c064cfaf1dc788c861a7e091c64c437d3a093362766396b1ffbd814f72992510@ec2-54-75-229-28.eu-west-1.compute.amazonaws.com:5432/d79hn0blvq7o6b'
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Ensure templates are auto-reloaded

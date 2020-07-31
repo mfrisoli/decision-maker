@@ -240,7 +240,7 @@ def edit_list():
 
         session['edit_room'] = room_id
 
-        Roomsjoins.query.filter_by(room_id=room_id).update( {Roomjoins.voted: 'no'} )
+        Roomjoins.query.filter_by(room_id=room_id).update( {Roomjoins.voted: 'no'} )
         #db.session.commit()
 
         # Delete votes
