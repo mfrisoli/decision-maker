@@ -20,7 +20,7 @@ MarkupSafe==1.1.1
 mccabe==0.6.1
 pycparser==2.20
 pylint==2.5.3
-pyOpenSSL19.1.0
+pyOpenSSL==19.1.0
 PySocks==1.7.1
 requests==2.24.0
 six==1.15.0
