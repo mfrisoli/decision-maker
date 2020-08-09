@@ -2,12 +2,16 @@ from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
 from tempfile import mkdtemp
 from flask_session import Session
+from sqlalchemy import desc
+from sqlalchemy.sql import func
 from cs50 import SQL
 
 
 # Configure application
 app = Flask(__name__)
 app.secret_key = 'sdfs5df5sdfsgsdkgnsdlkfsdf5fdsd5fs5dfsdf4s5df5sd'
+
+secret_key = 'sdfs5df5sdfsgsdkgnsdlkfsdf5fdsd5fs5dfsdf4s5df5sd'
 
 ENVI = 'prod'
 
@@ -25,17 +29,14 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 # Configure session to use filesystem (instead of signed cookies)
-app.config["SESSION_FILE_DIR"] = mkdtemp()
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
+#app.config["SESSION_FILE_DIR"] = mkdtemp()
+#app.config["SESSION_PERMANENT"] = False
+#app.config["SESSION_TYPE"] = "filesystem"
 
-Session(app)
+#Session(app)
 
 # Institiate the Database Object
 db = SQLAlchemy(app)
-
-# Configure CS50 Library to use SQLite database
-#db = SQL("sqlite:///database.db")
 
 
 class Users(db.Model):
@@ -80,8 +81,3 @@ class Roomjoins(db.Model):
     voted = db.Column(db.String(4), nullable=False, default='no')
     room_id = db.Column(db.Integer, db.ForeignKey('rooms.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-
-
-
-
-
