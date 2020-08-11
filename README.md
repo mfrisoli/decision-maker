@@ -10,6 +10,7 @@ Decision Maker is now a Web Application!
   - Interactive GUI
 
 ### Requirements
+Minimun 
 * Flask
 * Sqlite3
 * Python Interpreter 3.7
@@ -72,4 +73,4 @@ Use at your own risk
 
 "There will be no responsibility or liability for any issues from the use of this application by the user, whether or not arising from the negligence by the design of the application."
 
-Thanks to all CS50 app for putting together an amazing course!
+Thanks to all cs50x staff for putting together an amazing course,
