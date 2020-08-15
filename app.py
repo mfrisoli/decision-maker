@@ -67,7 +67,7 @@ def login():
 
         # Ensure username exists and password is correct
         if not user or not check_password_hash(user.hash, request.form.get("password")):
-            return apology("invalid username and/or password", 403)
+            return render_template("login.html", message="invalid username and/or password")
 
         # Remember which user has logged in
         session["user_id"] = user.id
@@ -78,7 +78,7 @@ def login():
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:
-        return render_template("login.html")
+        return render_template("login.html", message=False)
 
 
 @app.route("/logout")
