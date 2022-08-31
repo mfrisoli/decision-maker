@@ -22,9 +22,10 @@ ENVI = 'prod'
 #else:
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://yepxumatvbvtgd:c064cfaf1dc788c861a7e091c64c437d3a093362766396b1ffbd814f72992510@ec2-54-75-229-28.eu-west-1.compute.amazonaws.com:5432/d79hn0blvq7o6b'
 # app.config['SECRET_KEY'] = 'sdfs5df5sdfsgsdkgnsdlkfsdf5fdsd5fs5dfsdf4s5df5sd'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://yepxumatvbvtgd:c064cfaf1dc788c861a7e091c64c437d3a093362766396b1ffbd814f72992510@ec2-52-211-144-45.eu-west-1.compute.amazonaws.com:5432/d79hn0blvq7o6b'
-
-app.config['SECRET_KEY'] = 'c064cfaf1dc788c861a7e091c64c437d3a093362766396b1ffbd814f72992510'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://yepxumatvbvtgd:c064cfaf1dc788c861a7e091c64c437d3a093362766396b1ffbd814f72992510@ec2-52-211-144-45.eu-west-1.compute.amazonaws.com:5432/d79hn0blvq7o6b'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://agaswchsgsszmr:99435e598728ecfd1b71734a13a95684890c6e4ddc1b34a14b5b0c4f16e965ae@ec2-34-246-27-167.eu-west-1.compute.amazonaws.com:5432/d9soesqgm9o0cp'
+# app.config['SECRET_KEY'] = 'c064cfaf1dc788c861a7e091c64c437d3a093362766396b1ffbd814f72992510'
+app.config['SECRET_KEY'] = '99435e598728ecfd1b71734a13a95684890c6e4ddc1b34a14b5b0c4f16e965ae'
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
